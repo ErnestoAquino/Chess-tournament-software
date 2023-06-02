@@ -10,11 +10,11 @@ class Tournament:
     number_of_rounds: int
     current_round: int = 0
 
-    def __int__(self, name: str, location: str):
+    def __int__(self, name: str, location: str, number_of_rounds=4):
         self.name = name
         self.location = location
         self.start_date = datetime.datetime.now().date()
-        self.number_of_rounds = 4
+        self.number_of_rounds = number_of_rounds
 
     def add_player(self, player: Model.Player):
         self.players.append(player)
