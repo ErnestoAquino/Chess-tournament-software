@@ -1,0 +1,2 @@
+from View.ChessTournamentView import ChessTournamentView
+from View.MainView import MainView
