@@ -1,3 +1,5 @@
 
 class MainController:
-    pass
+
+
+    __init__()
