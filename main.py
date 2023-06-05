@@ -1,4 +1,5 @@
 import Model
+import Controller
 
 # juan = Model.Player(first_name="Juanito",
 #                     last_name="Perez",
@@ -50,9 +51,11 @@ import Model
 
 
 def main():
-    print("Tournament Creation")
-    new_tournament = Model.Tournament(name = "Torneo San Benito", location = "Mexico")
-    print(new_tournament.start_date)
+    # print("Tournament Creation")
+    # new_tournament = Model.Tournament(name = "Torneo San Benito", location = "Mexico")
+    # print(new_tournament.start_date)
+    controller = Controller.MainController()
+    controller.start()
 
 
 if __name__ == '__main__':
