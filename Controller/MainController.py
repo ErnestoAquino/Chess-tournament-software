@@ -15,7 +15,7 @@ class MainController:
         match choice:
             case 1:
                 chess_tournament_controller = Controller.ChessTournamentController()
-
+                chess_tournament_controller.start_tournament()
             case 2:
                 print("Under construction")
 
