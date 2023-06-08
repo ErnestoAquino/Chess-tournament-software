@@ -24,3 +24,19 @@ class Tournament:
 
     def write_description(self, description: str):
         self.description = description
+
+    def create_match(self, player1: Model.Player, player2: Model.Player) -> Model.Match:
+        pass
+
+    def add_match(self, match: Model.Match):
+        self.rounds.append(match)
+
+    def save_players(self):
+        pass
+
+    def load_players(self) -> [Model.Player]:
+        pass
+    # def present_tournament_information(self):
+    #     print(f"Tournament name: {self.name}\n")
+    #     print(f"Tournament location: {self.location}")
+    #     print(f"Tournament description: {self.description}")
