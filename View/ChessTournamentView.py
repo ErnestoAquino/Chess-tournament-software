@@ -1,48 +1,49 @@
 import Model
 
 
+# noinspection PyMethodMayBeStatic
 class ChessTournamentView:
-    @staticmethod
-    def display_message_success(name: str):
-        print(f"The tournament {name} has been successfully created with the following information:")
+    response: str = None
 
-    @staticmethod
-    def display_message_tournament_creation():
+    # @staticmethod
+    def display_message_success(self, name: str):
+        print(f"The tournament {name.capitalize()} has been successfully created with the following information:")
+
+    def display_message_tournament_creation(self):
         print("You have decided to create a tournament. Please enter the requested information in order to proceed "
               "with its creation.")
 
-    @staticmethod
-    def display_message_naming():
+    def display_message_naming(self):
         print("Please, enter the name of the chess tournament:")
 
-    @staticmethod
-    def display_message_location():
+    def display_message_location(self):
         print("Please, enter the location of the chess tournament:")
 
-    @staticmethod
-    def display_message_description():
+    def display_message_description(self):
         print("Please enter the description of the tournament.")
 
-    @staticmethod
-    def display_players(players: [Model.Player]):
+    def display_players(self, players: [Model.Player]):
         print("Registered players:")
         for player in players:
             print(player.first_name)
 
-    @staticmethod
-    def display_tournament_information(tournament: Model.Tournament):
+    def display_tournament_information(self, tournament: Model.Tournament):
         print(f"Tournament name: {tournament.name}")
         print(f"Tournament location: {tournament.location}")
         print(f"Tournament description: {tournament.description}")
 
-    @staticmethod
-    def display_message_register_player():
+    def display_message_register_player(self):
         print("The tournament requires 4 players. "
               "To register a player, you need their first name, "
               "last name, date of birth, and their national chess player identifier.")
 
-    @staticmethod
-    def present_players(players: [Model.Player]):
+    def present_players(self, players: [Model.Player]):
         print("Registered Players:")
         for player in players:
             print(player.first_name)
+
+    def get_user_response(self, information_request: str) -> str:
+        self.response = str(input(information_request))
+        while not self.response:
+            self.response = str(input("Please enter a valid response"))
+        return self.response
