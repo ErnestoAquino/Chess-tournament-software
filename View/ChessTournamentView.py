@@ -28,9 +28,9 @@ class ChessTournamentView:
             print(player.first_name)
 
     def display_tournament_information(self, tournament: Model.Tournament):
-        print(f"Tournament name: {tournament.name}")
-        print(f"Tournament location: {tournament.location}")
-        print(f"Tournament description: {tournament.description}")
+        print(f"Name: {tournament.name}")
+        print(f"Location: {tournament.location}")
+        print(f"Description: {tournament.description}")
 
     def display_message_register_player(self):
         print("The tournament requires 4 players. "
