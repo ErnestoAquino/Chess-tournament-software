@@ -36,7 +36,4 @@ class Tournament:
 
     def load_players(self) -> [Model.Player]:
         pass
-    # def present_tournament_information(self):
-    #     print(f"Tournament name: {self.name}\n")
-    #     print(f"Tournament location: {self.location}")
-    #     print(f"Tournament description: {self.description}")
+
