@@ -13,8 +13,8 @@ class Tournament:
     current_round: int = 0
 
     def __init__(self, name: str, location: str, number_of_rounds=4):
-        self.name = name
-        self.location = location
+        self.name = name.capitalize()
+        self.location = location.capitalize()
         self.start_date = datetime.datetime.now().date()
         self.number_of_rounds = number_of_rounds
 
@@ -42,5 +42,13 @@ class Tournament:
                                   "chess_national_id": player.chess_national_id,
                                   "score": player.score})
 
-    def load_players(self) -> [Model.Player]:
-        pass
+    def load_players(self):
+        local_players = self.DATA_BASE.table("Players")
+        results = local_players.all()
+        for result in results:
+            player = Model.Player(first_name = result["first_name"],
+                                  last_name = result["last_name"],
+                                  date_of_birth = result["date_of_birth"],
+                                  chess_national_id = result["chess_national_id"],
+                                  score = result["score"])
+            self.players.append(player)
