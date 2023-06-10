@@ -46,4 +46,4 @@ class ChessTournamentView:
         self.response = str(input(information_request))
         while not self.response:
             self.response = str(input("Please enter a valid response"))
-        return self.response
+        return self.response.upper()
