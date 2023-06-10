@@ -37,6 +37,7 @@ class ChessTournamentController:
         self.chess_tournament_view.display_tournament_information(self.tournament)
         self.register_players(number_of_players=self.NUMBER_CHESS_PLAYERS)
         self.chess_tournament_view.present_players(players=self.tournament.players)
+        # self.tournament.save_players()
 
     def register_players(self, number_of_players: int):
         self.chess_tournament_view.display_message_register_player()
