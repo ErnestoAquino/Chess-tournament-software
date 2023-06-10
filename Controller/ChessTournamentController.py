@@ -34,9 +34,11 @@ class ChessTournamentController:
                                                                                                   "Description: ")
         self.tournament.write_description(tournament_description)
         self.chess_tournament_view.display_message_success(tournament_name)
-        self.chess_tournament_view.display_tournament_information(self.tournament)
-        self.register_players(number_of_players=self.NUMBER_CHESS_PLAYERS)
-        self.chess_tournament_view.present_players(players=self.tournament.players)
+        self.tournament.load_players()
+        self.chess_tournament_view.present_players(self.tournament.players)
+        # self.chess_tournament_view.display_tournament_information(self.tournament)
+        # self.register_players(number_of_players=self.NUMBER_CHESS_PLAYERS)
+        # self.chess_tournament_view.present_players(players=self.tournament.players)
         # self.tournament.save_players()
 
     def register_players(self, number_of_players: int):
