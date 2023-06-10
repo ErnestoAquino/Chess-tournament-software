@@ -1,8 +1,10 @@
+from tinydb import TinyDB
 import datetime
 import Model
 
 
 class Tournament:
+    DATA_BASE = TinyDB("Data/Players/Players.json")
     players = []
     rounds = []
     end_datetime: str
@@ -32,8 +34,13 @@ class Tournament:
         self.rounds.append(match)
 
     def save_players(self):
-        pass
+        local_players = self.DATA_BASE.table("Players")
+        for player in self.players:
+            local_players.insert({"first_name": player.first_name,
+                                  "last_name": player.last_name,
+                                  "date_of_birth": player.date_of_birth,
+                                  "chess_national_id": player.chess_national_id,
+                                  "score": player.score})
 
     def load_players(self) -> [Model.Player]:
         pass
-
