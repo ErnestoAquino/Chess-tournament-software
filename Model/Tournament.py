@@ -1,3 +1,5 @@
+import random
+
 from tinydb import TinyDB
 import datetime
 import Model
@@ -27,9 +29,6 @@ class Tournament:
     def write_description(self, description: str):
         self.description = description
 
-    def create_match(self, player1: Model.Player, player2: Model.Player) -> Model.Match:
-        pass
-
     def add_match(self, match: Model.Match):
         self.rounds.append(match)
 
@@ -52,3 +51,15 @@ class Tournament:
                                   chess_national_id = result["chess_national_id"],
                                   score = result["score"])
             self.players.append(player)
+
+    def shuffle_players(self):
+        random.shuffle(self.players)
+
+    def create_first_round(self):
+        self.shuffle_players()
+        first_round = Model.Round(name = "Round 1")
+        for i in range(0, len(self.players), 2):
+            match = Model.Match(player1 = self.players[i], player2 = self.players[i + 1])
+            first_round.add_mach(match)
+        self.rounds.append(first_round)
+
