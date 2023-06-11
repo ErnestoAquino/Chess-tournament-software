@@ -1,10 +1,11 @@
 class MainView:
-    NUMBER_OF_OPTIONS: int = 2
+    NUMBER_OF_OPTIONS: int = 3
 
     def display_main_menu(self):
         print("""Welcome to the chess center. Please choose one the following options"
         1 - Create new tournament
-        2 - Display reports""")
+        2 - Display reports
+        3 - Add new player """)
 
     def display_options(self):
         print("Please, make your selection:\n")
