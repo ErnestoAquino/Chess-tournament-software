@@ -16,3 +16,5 @@ class MainController:
                 self.chess_tournament_controller.start_tournament()
             case 2:
                 print("Under construction")
+            case 3:
+                print("Under construction")
