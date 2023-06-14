@@ -35,7 +35,11 @@ class ChessTournamentController:
         self.tournament.write_description(tournament_description)
         self.chess_tournament_view.display_message_success(tournament_name)
         self.tournament.load_players()
-        self.chess_tournament_view.present_players(self.tournament.players)
+        # self.chess_tournament_view.present_players(self.tournament.players)
+        self.chess_tournament_view.display_scores(self.tournament.players)
+        self.tournament.start()
+        self.present_rounds()
+        self.chess_tournament_view.display_scores(self.tournament.players)
         # self.chess_tournament_view.display_tournament_information(self.tournament)
         # self.register_players(number_of_players=self.NUMBER_CHESS_PLAYERS)
         # self.chess_tournament_view.present_players(players=self.tournament.players)
@@ -54,3 +58,14 @@ class ChessTournamentController:
                                   date_of_birth,
                                   national_id)
             self.tournament.add_player(player)
+
+    def present_rounds(self):
+        for round in self.tournament.rounds:
+            print(f"Round {round.name}")
+            print(f"Star Date: {round.start_datetime}")
+            for match in round.list_of_matches:
+                print(f"Match {match.player1.first_name} VS {match.player2.first_name}")
+                match.print_color_players()
+                print("---------------")
+                result = self.chess_tournament_view.get_result_of_match()
+                match.set_result(result)
