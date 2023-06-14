@@ -62,3 +62,7 @@ class Tournament:
             match = Model.Match(player1 = self.players[i], player2 = self.players[i + 1])
             first_round.add_mach(match)
         self.rounds.append(first_round)
+
+    def start(self):
+        self.shuffle_players()
+        self.create_first_round()
