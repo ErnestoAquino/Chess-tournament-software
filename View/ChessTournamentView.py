@@ -4,6 +4,11 @@ import Model
 # noinspection PyMethodMayBeStatic
 class ChessTournamentView:
     response: str = None
+    number_of_options: int
+    message_error: str = "Invalid answer, please try again"
+
+    def __init__(self, number_of_options: int = 3):
+        self.number_of_options = number_of_options
 
     # @staticmethod
     def display_message_success(self, name: str):
@@ -47,3 +52,36 @@ class ChessTournamentView:
         while not self.response:
             self.response = str(input("Please enter a valid response"))
         return self.response.upper()
+
+    def get_result_of_match(self) -> Model.Result:
+        numero = self.get_choice_result()
+        match numero:
+            case 1:
+                return Model.Result.WIN
+            case 2:
+                return Model.Result.LOSS
+            case 3:
+                return Model.Result.DRAW
+
+    def display_options(self):
+        print("What was the result of the match?")
+        print("1. The white pieces won.")
+        print("2. The black pieces won.")
+        print("3. It was a draw.")
+
+    def get_choice_result(self) -> int:
+        numero = -1
+        self.display_options()
+        while numero > self.number_of_options or numero <= 0:
+            try:
+                numero = int(input())
+                if numero > self.number_of_options or numero <= 0:
+                    print(self.message_error)
+            except ValueError:
+                print(self.message_error)
+                numero = -1
+        return numero
+
+    def display_scores(self, players: [Model.Player]):
+        for player in players:
+            print(f"Player: {player.first_name} Score: {player.score}")
