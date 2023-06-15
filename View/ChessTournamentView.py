@@ -1,3 +1,4 @@
+from prettytable import PrettyTable
 import Model
 
 
@@ -83,5 +84,8 @@ class ChessTournamentView:
         return numero
 
     def display_scores(self, players: [Model.Player]):
+        scores = PrettyTable()
+        scores.field_names = ["Player", "Score"]
         for player in players:
-            print(f"Player: {player.first_name} Score: {player.score}")
+            scores.add_row([player.first_name, player.score])
+        print(scores)
