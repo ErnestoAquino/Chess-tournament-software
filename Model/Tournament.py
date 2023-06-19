@@ -29,8 +29,11 @@ class Tournament:
     def write_description(self, description: str):
         self.description = description
 
-    def add_match(self, match: Model.Match):
-        self.rounds.append(match)
+    def add_round(self, round: Model.Round):
+        self.rounds.append(round)
+
+    # def add_match(self, match: Model.Match):
+    #     self.rounds.append(match)
 
     def save_players(self):
         local_players = self.DATA_BASE.table("Players")
@@ -55,14 +58,5 @@ class Tournament:
     def shuffle_players(self):
         random.shuffle(self.players)
 
-    def create_first_round(self):
-        self.shuffle_players()
-        first_round = Model.Round(name = "Round 1")
-        for i in range(0, len(self.players), 2):
-            match = Model.Match(player1 = self.players[i], player2 = self.players[i + 1])
-            first_round.add_mach(match)
-        self.rounds.append(first_round)
-
-    def start(self):
-        self.shuffle_players()
-        self.create_first_round()
+    def sort_players(self):
+        self.players = sorted(self.players, key = lambda x: x.score, reverse = True)
