@@ -4,6 +4,10 @@ import Model
 
 # noinspection PyMethodMayBeStatic
 class ChessTournamentView:
+    options: str = "What was the result of the match.\n" \
+                   "1 - White pieces won.\n" \
+                   "2 - Black pieces won.\n" \
+                   "3 - It was a draw.\n"
     response: str = None
     number_of_options: int
     message_error: str = "Invalid answer, please try again"
@@ -34,9 +38,10 @@ class ChessTournamentView:
             print(player.first_name)
 
     def display_tournament_information(self, tournament: Model.Tournament):
-        print(f"Name: {tournament.name}")
-        print(f"Location: {tournament.location}")
-        print(f"Description: {tournament.description}")
+        tournament_information = PrettyTable()
+        tournament_information.field_names = ["Tournament Name", "Location", "Description"]
+        tournament_information.add_row([tournament.name, tournament.location, tournament.description])
+        print(tournament_information)
 
     def display_message_register_player(self):
         print("The tournament requires 4 players. "
@@ -65,14 +70,17 @@ class ChessTournamentView:
                 return Model.Result.DRAW
 
     def display_options(self):
-        print("What was the result of the match?")
-        print("1. The white pieces won.")
-        print("2. The black pieces won.")
-        print("3. It was a draw.")
+        options = PrettyTable()
+        options.field_names = [" ", "What was the result of the match"]
+        options.add_row(["1", "White pieces won"])
+        options.add_row(["2", "Black pieces won"])
+        options.add_row(["3", "It was a draw"])
+        print(options)
 
     def get_choice_result(self) -> int:
         numero = -1
-        self.display_options()
+        # self.display_options()
+        print(self.options)
         while numero > self.number_of_options or numero <= 0:
             try:
                 numero = int(input())
@@ -85,7 +93,25 @@ class ChessTournamentView:
 
     def display_scores(self, players: [Model.Player]):
         scores = PrettyTable()
-        scores.field_names = ["Player", "Score"]
+        scores.field_names = ["ID", "Player", "Score"]
         for player in players:
-            scores.add_row([player.first_name, player.score])
+            scores.add_row([player.chess_national_id, player.first_name, player.score])
         print(scores)
+
+    def display_matches(self, list_of_matches: [Model.Match]):
+        for match in list_of_matches:
+            self.display_match(match)
+
+    def display_match(self, match: Model.Match):
+        table_match = PrettyTable()
+        table_match.field_names = ["Match -> ", f"{match.player1.first_name} VS {match.player2.first_name}"]
+        table_match.add_row([f"{match.white_player.first_name}", "Play with white pieces"])
+        table_match.add_row([f"{match.black_player.first_name}", "Play with black pieces"])
+        print(table_match)
+
+    def display_round(self, round: Model.Round):
+        print(f"{round.name}")
+        print(f"Start Date: {round.start_datetime}")
+        print("**** M A T C H E S ***")
+        self.display_matches(round.list_of_matches)
+        print("*** Please enter the chess matches results ***")
