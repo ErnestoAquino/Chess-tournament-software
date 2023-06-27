@@ -79,7 +79,6 @@ class ChessTournamentView:
 
     def get_choice_result(self) -> int:
         numero = -1
-        # self.display_options()
         print(self.options)
         while numero > self.number_of_options or numero <= 0:
             try:
@@ -99,12 +98,13 @@ class ChessTournamentView:
         print(scores)
 
     def display_matches(self, list_of_matches: [Model.Match]):
-        for match in list_of_matches:
-            self.display_match(match)
+        for i, match in enumerate(list_of_matches):
+            self.display_match(match, number_match = i)
 
-    def display_match(self, match: Model.Match):
+    def display_match(self, match: Model.Match, number_match: int):
         table_match = PrettyTable()
-        table_match.field_names = ["Match -> ", f"{match.player1.first_name} VS {match.player2.first_name}"]
+        table_match.field_names = [f"Match number {number_match} -> ",
+                                   f"{match.player1.first_name} VS {match.player2.first_name}"]
         table_match.add_row([f"{match.white_player.first_name}", "Play with white pieces"])
         table_match.add_row([f"{match.black_player.first_name}", "Play with black pieces"])
         print(table_match)
@@ -112,6 +112,6 @@ class ChessTournamentView:
     def display_round(self, round: Model.Round):
         print(f"{round.name}")
         print(f"Start Date: {round.start_datetime}")
-        print("**** M A T C H E S ***")
+        print("**** L I S T   O F   M A T C H E S ***")
         self.display_matches(round.list_of_matches)
         print("*** Please enter the chess matches results ***")
