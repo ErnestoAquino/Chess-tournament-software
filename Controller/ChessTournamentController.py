@@ -1,6 +1,6 @@
 from typing import List
 from typing import Set
-from typing import Tuple
+from tinydb import TinyDB
 import itertools
 import Model
 import View
@@ -9,7 +9,6 @@ import View
 class ChessTournamentController:
     NUMBER_CHESS_PLAYERS: int
     response: str = None
-    # previous_matches = set()
 
     def __init__(self, number_chess_players: int = 4):
         self.tournament = None
@@ -45,6 +44,8 @@ class ChessTournamentController:
         self.create_the_rounds()
         self.tournament.sort_players()
         self.chess_tournament_view.display_scores(self.tournament.players)
+        self.tournament.write_end_date()
+        self.save_tournament()
 
     def register_players(self, number_of_players: int):
         self.chess_tournament_view.display_message_register_player()
@@ -108,7 +109,6 @@ class ChessTournamentController:
                     paired_players.append(pair)
                     player1 = pair[0]
                     player2 = pair[1]
-                    # pairings.append(pair)
                     pairings.append(Model.Match(player1, player2))
                     players_with_pair.append(pair[0])
                     players_with_pair.append(pair[1])
@@ -143,3 +143,47 @@ class ChessTournamentController:
         for player in self.tournament.players:
             print(f"{player.first_name}")
             player.test_print_opponents()
+
+    def save_tournament(self):
+        data_base = TinyDB("Data/Tournaments/Tournaments.json")
+        tournaments_table = data_base.table("tournaments")
+        rounds_table = data_base.table("rounds")
+        matches_table = data_base.table("matches")
+        players_table = data_base.table("players")
+
+        tournament_data = {
+            "name": self.tournament.name,
+            "location": self.tournament.location,
+            "start_date": self.tournament.start_date,
+            "end_date": self.tournament.end_datetime,
+            "number_of_rounds": self.tournament.number_of_rounds
+        }
+        print(tournament_data)
+        tournament_id = tournaments_table.insert(tournament_data)
+        for round in self.tournament.rounds:
+            round_data = {
+                "name": round.name,
+                "start_date": round.start_datetime,
+                "end_date": round.end_datetime,
+                "tournament_id": tournament_id
+            }
+            round_id = rounds_table.insert(round_data)
+            for match in round.list_of_matches:
+                match_data = {
+                    "white_player": match.white_player.first_name,
+                    "white_player_id": match.white_player.chess_national_id,
+                    "black_player": match.black_player.first_name,
+                    "black_player_id": match.black_player.chess_national_id,
+                    "result": match.result.name,
+                    "round_id": round_id
+                }
+                matches_table.insert(match_data)
+        for player in self.tournament.players:
+            player_data = {
+                "first_name": player.first_name,
+                "last_name": player.last_name,
+                "date_of_birth": player.date_of_birth,
+                "chess_national_id": player.chess_national_id,
+                "score": player.score
+            }
+            players_table.insert(player_data)
