@@ -17,7 +17,7 @@ class Tournament:
     def __init__(self, name: str, location: str, number_of_rounds=4):
         self.name = name.capitalize()
         self.location = location.capitalize()
-        self.start_date = datetime.datetime.now().date()
+        self.start_date = str(datetime.datetime.now().date())
         self.number_of_rounds = number_of_rounds
 
     def add_player(self, player: Model.Player):
