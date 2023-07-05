@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report: List of all players in alphabetical order</title>
+</head>
+<body>
+    <h1>Report: List of all players in alphabetical order</h1>
+    <table>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Chess National ID</th>
+            <th>Date of Birth</th>
+        </tr>
+        {% for player in players %}
+        <tr>
+            <td style="text-align: center;">{{ player.first_name }}</td>
+            <td style="text-align: center;">{{ player.last_name }}</td>
+            <td style="text-align: center;">{{ player.chess_national_id }}</td>
+            <td style="text-align: center;">{{ player.date_of_birth }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

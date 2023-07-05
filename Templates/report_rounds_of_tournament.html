@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tournament details</title>
+</head>
+<body>
+    <h1>{{ tournament.name }}</h1>
+    <p>Start date: {{ tournament.start_date }}</p>
+    <p>Finish date: {{ tournament.end_date }}</p>
+
+        {% for round in rounds %}
+        <h2> {{ round.name }}</h2>
+        <p>Start date: {{ round.start_date }}</p>
+        <p>Finish date: {{ round.end_date }}</p>
+
+        <h3>Matches</h3>
+        <table>
+            <tr>
+                <th>N°</th>
+                <th>WHITE PLAYER</th>
+                <th>BLACK PLAYER</th>
+                <th>RESULT (for WP)</th>
+            </tr>
+            {% for match in round.matches %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>[{{ match.white_player_id }}] {{ match.white_payer }}</td>
+                <td>[{{ match.black_player_id }}] {{ match.black_player }}</td>
+                <td style="text-align: center;">[ {{ match.result }} ]</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endfor %}
+
+</body>
+</html>

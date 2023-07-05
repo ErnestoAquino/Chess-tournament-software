@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Players</title>
+</head>
+<body>
+    <h1>List of players</h1>
+    <p>Tournament: {{ tournament_name }}</p>
+    <ul>
+    {% for player in players %}
+        <li> {{ player.last_name }} {{ player.first_name }} </li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
