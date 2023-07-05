@@ -2,6 +2,7 @@ from jinja2 import Environment
 from jinja2 import FileSystemLoader
 from typing import Dict
 from typing import List
+from typing import Any
 import os
 import Model
 
@@ -43,10 +44,8 @@ class ReportsView:
             }
             players_to_show.append(new_player)
         html_output = template.render(players=players_to_show)
-        report_output_path = os.path.join(self.REPORT_FOLDER,"report_all_players_output.html")
-        with open(report_output_path, "w") as file:
-            file.write(html_output)
-        print(html_output)
+        self.save_report_as_html_file(rendered_template=html_output,
+                                      output_file_name="report_all_players_output.html")
 
     def display_tournaments(self, tournaments: []):
         template = self.env.get_template("Templates/report_all_tournaments.html")
@@ -56,34 +55,26 @@ class ReportsView:
             new_tournament = {"name": tournament["name"]}
             tournaments_to_show.append(new_tournament)
         html_output = template.render(tournaments=tournaments_to_show)
-        report_output_path = os.path.join(self.REPORT_FOLDER, "report_all_tournaments_output.html")
-        with open(report_output_path, "w") as file:
-            file.write(html_output)
-        print(html_output)
+        self.save_report_as_html_file(rendered_template=html_output,
+                                      output_file_name="report_all_tournaments_output.html")
 
     def display_one_tournament(self, tournament_to_show: Dict):
         template = self.env.get_template("Templates/report_one_tournament.html")
         html_output = template.render(tournament=tournament_to_show)
-        report_output_path = os.path.join(self.REPORT_FOLDER, "report_one_tournament_output.html")
-        with open(report_output_path, "w") as file:
-            file.write(html_output)
-        print(html_output)
+        self.save_report_as_html_file(rendered_template=html_output,
+                                      output_file_name="report_one_tournament_output.html")
 
     def display_players_alphabetical_order(self, players: List[Dict], tournament_name: str):
         template = self.env.get_template("Templates/report_players.html")
         html_output = template.render(players=players, tournament_name=tournament_name)
-        report_output_path = os.path.join(self.REPORT_FOLDER, "report_players_output.html")
-        with open(report_output_path, "w") as file:
-            file.write(html_output)
-        print(html_output)
+        self.save_report_as_html_file(rendered_template=html_output,
+                                      output_file_name="report_players_output.html")
 
     def display_rounds_from_tournament(self, tournament: Dict, rounds_to_show: List[Dict]):
         template = self.env.get_template("Templates/report_rounds_of_tournament.html")
         html_output = template.render(tournament=tournament, rounds=rounds_to_show)
-        report_output_path = os.path.join(self.REPORT_FOLDER, "report_rounds_of_tournament_output.html")
-        with open(report_output_path, "w") as file:
-            file.write(html_output)
-        print(html_output)
+        self.save_report_as_html_file(rendered_template=html_output,
+                                      output_file_name="report_rounds_of_tournament_output.html")
 
     def show_available_tournaments(self, tournaments: []) -> int:
         print("Please, select a tournament:\n")
@@ -95,3 +86,9 @@ class ReportsView:
     def check_if_folder_exist(self):
         if not os.path.exists(self.REPORT_FOLDER):
             os.mkdir(self.REPORT_FOLDER)
+
+    def save_report_as_html_file(self, rendered_template: Any, output_file_name: str):
+        report_output_path = os.path.join(self.REPORT_FOLDER, output_file_name)
+        with open(report_output_path, "w") as file:
+            file.write(rendered_template)
+        print(rendered_template)
