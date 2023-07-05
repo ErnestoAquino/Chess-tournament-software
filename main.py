@@ -2,8 +2,8 @@ import Controller
 
 
 def main():
-    controller = Controller.MainController()
-    controller.start()
+    main_controller = Controller.MainController()
+    main_controller.start()
 
 
 if __name__ == '__main__':
