@@ -109,9 +109,9 @@ class ChessTournamentView:
         table_match.add_row([f"{match.black_player.first_name}", "Play with black pieces"])
         print(table_match)
 
-    def display_round(self, round: Model.Round):
-        print(f"{round.name}")
-        print(f"Start Date: {round.start_datetime}")
+    def display_round(self, round_to_show: Model.Round):
+        print(f"{round_to_show.name}")
+        print(f"Start Date: {round_to_show.start_datetime}")
         print("**** L I S T   O F   M A T C H E S ***")
-        self.display_matches(round.list_of_matches)
+        self.display_matches(round_to_show.list_of_matches)
         print("*** Please enter the chess matches results ***")

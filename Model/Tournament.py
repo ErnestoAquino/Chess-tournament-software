@@ -48,11 +48,11 @@ class Tournament:
         local_players = self.DATA_BASE.table("Players")
         results = local_players.all()
         for result in results:
-            player = Model.Player(first_name = result["first_name"],
-                                  last_name = result["last_name"],
-                                  date_of_birth = result["date_of_birth"],
-                                  chess_national_id = result["chess_national_id"],
-                                  score = result["score"])
+            player = Model.Player(first_name=result["first_name"],
+                                  last_name=result["last_name"],
+                                  date_of_birth=result["date_of_birth"],
+                                  chess_national_id=result["chess_national_id"],
+                                  score=result["score"])
             self.players.append(player)
 
     def shuffle_players(self):
