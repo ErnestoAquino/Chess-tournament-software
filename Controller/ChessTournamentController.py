@@ -184,6 +184,7 @@ class ChessTournamentController:
                 "last_name": player.last_name,
                 "date_of_birth": player.date_of_birth,
                 "chess_national_id": player.chess_national_id,
-                "score": player.score
+                "score": player.score,
+                "tournament_id": tournament_id
             }
             players_table.insert(player_data)
