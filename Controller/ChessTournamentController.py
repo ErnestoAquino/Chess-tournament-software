@@ -188,3 +188,6 @@ class ChessTournamentController:
                 "tournament_id": tournament_id
             }
             players_table.insert(player_data)
+
+    def load_interrupted_tournament(self):
+        pass
