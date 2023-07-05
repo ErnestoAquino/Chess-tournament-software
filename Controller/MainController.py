@@ -7,6 +7,7 @@ class MainController:
     def __init__(self):
         self.chess_tournament_controller = Controller.ChessTournamentController()
         self.add_player_controller = Controller.AddPlayerController()
+        self.reports_controller = Controller.ReportsController()
         self.main_view = View.MainView()
 
     def start(self):
@@ -16,6 +17,6 @@ class MainController:
             case 1:
                 self.chess_tournament_controller.start_tournament()
             case 2:
-                print("Under construction")
+                self.reports_controller.start()
             case 3:
                 self.add_player_controller.get_players_to_save()
