@@ -127,7 +127,6 @@ class ReportsController:
         tournament = self.get_one_tournament(id_tournament=user_choice)
         rounds = self.test_get_rounds_from(id_tournament=user_choice)
         self.reports_view.display_rounds_from_tournament(tournament, rounds)
-        print(type(rounds))
 
     def start(self):
         user_choice = self.reports_view.get_choice(number_of_options=5,
