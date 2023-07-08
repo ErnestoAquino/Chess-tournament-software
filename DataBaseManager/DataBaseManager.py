@@ -6,7 +6,7 @@ import Model
 class DataBaseManager:
 
     def __init__(self):
-        self.data_base_players = TinyDB("Data/Tournaments/Players.json")
+        self.data_base_players = TinyDB("Data/Players/Players.json")
         self.data_base_tournaments = TinyDB("Data/Tournaments/Tournaments.json")
         self.data_base_temporary_tournament = TinyDB("Data/Tournaments/Temporary_Tournament.json")
 
@@ -53,3 +53,11 @@ class DataBaseManager:
                            "score": player.score,
                            "tournament_id": tournament_id}
             players_table.insert(player_data)
+
+    def check_if_tournament_temporary_is_empty(self) -> bool:
+        tournament_table = self.data_base_temporary_tournament.table("tournaments")
+        tournament_docs = tournament_table.all()
+        if len(tournament_docs) == 0:
+            return True
+        else:
+            return False
