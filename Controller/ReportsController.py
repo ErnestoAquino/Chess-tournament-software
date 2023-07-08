@@ -79,15 +79,16 @@ class ReportsController:
             matches = self.get_matches_from(id_round=round_i.doc_id)
             for match in matches:
                 match_data = {
-                    "white_payer": match["white_player"],
-                    "white_player_id": match["white_player_id"],
-                    "black_player": match["black_player"],
-                    "black_player_id": match["black_player_id"],
+                    "white_payer": match["white_player_first_name"] + " " + match["white_player_last_name"],
+                    "white_player_id": match["white_player_chess_national_id"],
+                    "black_player": match["black_player_first_name"] + " " + match["black_player_last_name"],
+                    "black_player_id": match["black_player_chess_national_id"],
                     "result": match["result"]
                 }
                 round_i["matches"].append(match_data)
-                print(f"{match['white_player']} played whites pieces  VS \
-                        {match['black_player']} played with black pieces. Result: {match['result']} white player.")
+                print(f"{match['white_player_first_name']} played whites pieces  VS \
+                        {match['black_player_first_name']} played with black pieces. Result: {match['result']} white "
+                      f"player.")
         return rounds
 
     def get_matches_from(self, id_round: int) -> List[Dict]:
