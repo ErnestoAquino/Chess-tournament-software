@@ -18,6 +18,7 @@ class ChessTournamentController:
 
     def create_tournament(self, name: str, location: str):
         self.tournament = Model.Tournament(name=name, location=location)
+        self.data_base_manager.checkpoint_creation_tournament(self.tournament)
 
     def register_player(self,
                         first_name: str,
@@ -38,6 +39,7 @@ class ChessTournamentController:
         self.create_tournament(tournament_name, tournament_location)
         tournament_description = self.chess_tournament_view.get_user_response(information_request="Tournament "
                                                                                                   "Description: ")
+        self.data_base_manager.checkpoint_add_tournament_description(tournament_description)
         self.tournament.write_description(tournament_description)
         self.chess_tournament_view.display_tournament_information(self.tournament)
         self.tournament.load_players()
@@ -47,20 +49,6 @@ class ChessTournamentController:
         self.chess_tournament_view.display_scores(self.tournament.players)
         self.tournament.write_end_date()
         self.save_tournament()
-
-    def register_players(self, number_of_players: int):
-        self.chess_tournament_view.display_message_register_player()
-        for i in range(number_of_players):
-            print(f"Player number {i + 1} registration:")
-            first_name = self.chess_tournament_view.get_user_response(information_request="First Name: ")
-            last_name = self.chess_tournament_view.get_user_response(information_request="Last Name: ")
-            date_of_birth = self.chess_tournament_view.get_user_response(information_request="Date of Birth: ")
-            national_id = self.chess_tournament_view.get_user_response(information_request="Chess National ID: ")
-            player = Model.Player(first_name,
-                                  last_name,
-                                  date_of_birth,
-                                  national_id)
-            self.tournament.add_player(player)
 
     def present_round(self, round_to_show: Model.Round):
         self.chess_tournament_view.display_round(round_to_show)
@@ -124,7 +112,6 @@ class ChessTournamentController:
         self.tournament.sort_players()
         new_round = Model.Round(name=f"Round {number_of_round}")
         pairings = self.generate_matches_test()
-        print(len(pairings), "EMPAREJAMIENTOS")
         for match in pairings:
             match.player1.played_players.append(match.player2)
             match.player2.played_players.append(match.player1)
