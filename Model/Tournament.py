@@ -32,8 +32,8 @@ class Tournament:
     def add_round(self, round: Model.Round):
         self.rounds.append(round)
 
-    # def add_match(self, match: Model.Match):
-    #     self.rounds.append(match)
+    def add_match(self, match: Model.Match):
+        self.rounds.append(match)
 
     def save_players(self):
         local_players = self.DATA_BASE.table("Players")
@@ -59,4 +59,4 @@ class Tournament:
         random.shuffle(self.players)
 
     def sort_players(self):
-        self.players = sorted(self.players, key = lambda x: x.score, reverse = True)
+        self.players = sorted(self.players, key=lambda x: x.score, reverse=True)
