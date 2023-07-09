@@ -4,6 +4,7 @@ import Model
 
 
 class DataBaseManager:
+    tournament_temporary_id = None
 
     def __init__(self):
         self.data_base_players = TinyDB("Data/Players/Players.json")
@@ -61,3 +62,22 @@ class DataBaseManager:
             return True
         else:
             return False
+
+    def checkpoint_creation_tournament(self, tournament: Model.Tournament):
+        data_base = self.data_base_temporary_tournament
+        tournaments_table = data_base.table("tournaments")
+        tournament_data = {
+            "name": tournament.name,
+            "location": tournament.location,
+            "start_date": tournament.start_date
+        }
+        self.tournament_temporary_id = tournaments_table.insert(tournament_data)
+        print(self.tournament_temporary_id)
+
+    def checkpoint_add_tournament_description(self, description: str):
+        tournament_found = self.data_base_temporary_tournament.table("tournaments").get \
+            (doc_id=self.tournament_temporary_id)
+        if tournament_found:
+            tournament_found["description"] = description
+            self.data_base_temporary_tournament.table("tournaments").update(tournament_found)
+
