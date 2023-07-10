@@ -17,7 +17,6 @@ class MainController:
             # Todo Write code to load unfinished tournament.
             print("Here is the code to resume the unfinished tournament")
         else:
-            self.main_view.display_main_menu()
             choice = self.main_view.get_choice()
             match choice:
                 case 1:
