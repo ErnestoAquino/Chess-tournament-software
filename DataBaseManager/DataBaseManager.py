@@ -80,3 +80,8 @@ class DataBaseManager:
             return False
         else:
             return True
+
+    def delete_unfinished_tournament(self):
+        tournament_table = self.data_base_temporary_tournament.table("tournaments")
+        tournament_table.truncate()
+        self.data_base_temporary_tournament.close()
