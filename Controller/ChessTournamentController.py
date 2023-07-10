@@ -139,4 +139,5 @@ class ChessTournamentController:
         pass
 
     def check_if_exists_tournament_interrupted(self) -> bool:
+        # Todo This function could be removed.
         pass
