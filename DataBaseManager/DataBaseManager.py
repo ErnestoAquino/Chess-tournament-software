@@ -184,3 +184,16 @@ class DataBaseManager:
         matches_table.truncate()
         players_table.truncate()
         self.data_base_temporary_tournament.close()
+
+    def load_unfinished_tournament(self):
+        tournament: Model.Tournament
+        tournament_data = self.data_base_temporary_tournament.table("tournaments").all()[0]
+        name = tournament_data.get("name", None)
+        location = tournament_data.get("location", None)
+        start_date = tournament_data.get("start_date", None)
+        if all(item is not None for item in [name, location, start_date]):
+            tournament = Model.Tournament(name, location)
+            print(f"Unfinished tournament name = {tournament.name}")
+            print(f"Unfinished tournament location = {tournament.location}")
+            print(f"Unfinished tournament start date: = {tournament.start_date}")
+
