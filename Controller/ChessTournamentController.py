@@ -20,6 +20,8 @@ class ChessTournamentController:
         self.tournament = Model.Tournament(name=name, location=location)
         self.data_base_manager.checkpoint_creation_tournament(self.tournament)
 
+    # Todo This methode can be deleted
+
     def register_player(self,
                         first_name: str,
                         last_name: str,
@@ -31,7 +33,7 @@ class ChessTournamentController:
                               chess_national_id=chess_national_id)
         self.tournament.add_player(player)
 
-    def start_tournament(self):
+    def prepared_tournament(self):
         self.chess_tournament_view.display_message_tournament_creation()
         tournament_name = self.chess_tournament_view.get_user_response(information_request="Tournament Name: ")
         tournament_location = self.chess_tournament_view.get_user_response(
@@ -41,8 +43,12 @@ class ChessTournamentController:
                                                                                                   "Description: ")
         self.data_base_manager.checkpoint_add_tournament_description(tournament_description)
         self.tournament.write_description(tournament_description)
+
+    def start_tournament(self):
+        self.prepared_tournament()
         self.chess_tournament_view.display_tournament_information(self.tournament)
         self.tournament.load_players()
+        self.data_base_manager.checkpoint_players(self.tournament)
         self.chess_tournament_view.display_scores(self.tournament.players)
         self.create_the_rounds()
         self.tournament.sort_players()
@@ -56,7 +62,14 @@ class ChessTournamentController:
             self.chess_tournament_view.display_match(match, number_match=i)
             result = self.chess_tournament_view.get_result_of_match()
             match.set_result(result)
+            self.data_base_manager.update_result_match(self.tournament.current_round,
+                                                       number_of_match=i,
+                                                       result=result)
         round_to_show.write_end_datetime()
+        self.data_base_manager.update_end_datetime_round(round_id=self.tournament.current_round,
+                                                         datetime=round_to_show.end_datetime)
+        self.data_base_manager.checkpoint_players(self.tournament)
+        self.tournament.current_round += 1
 
     def create_first_round(self):
         self.tournament.shuffle_players()
@@ -70,6 +83,8 @@ class ChessTournamentController:
             first_round.add_mach(match)
         self.tournament.rounds.append(first_round)
         self.tournament.current_round += 1
+        self.data_base_manager.checkpoint_round(self.tournament.rounds)
+        self.data_base_manager.checkpoint_players(self.tournament)
 
     def generate_matches(self, previous_matches: Set[frozenset]) \
             -> List[Model.Match]:
@@ -136,8 +151,4 @@ class ChessTournamentController:
         self.data_base_manager.save_tournament(self.tournament)
 
     def load_interrupted_tournament(self):
-        pass
-
-    def check_if_exists_tournament_interrupted(self) -> bool:
-        # Todo This function could be removed.
         pass
