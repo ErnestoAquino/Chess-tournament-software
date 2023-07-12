@@ -149,7 +149,10 @@ class ChessTournamentController:
             player.test_print_opponents()
 
     def save_tournament(self):
-        self.data_base_manager.save_tournament(self.tournament)
+        # Todo Esto impide guardar el torneo
+        # self.data_base_manager.save_tournament(self.tournament)
+        self.data_base_manager.delete_unfinished_tournament()
+        pass
 
     def load_interrupted_tournament(self):
         pass
