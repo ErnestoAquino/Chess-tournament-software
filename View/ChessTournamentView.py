@@ -103,7 +103,7 @@ class ChessTournamentView:
 
     def display_match(self, match: Model.Match, number_match: int):
         table_match = PrettyTable()
-        table_match.field_names = [f"Match number {number_match} -> ",
+        table_match.field_names = [f"Match number {number_match + 1} -> ",
                                    f"{match.player1.first_name} VS {match.player2.first_name}"]
         table_match.add_row([f"{match.white_player.first_name}", "Play with white pieces"])
         table_match.add_row([f"{match.black_player.first_name}", "Play with black pieces"])
