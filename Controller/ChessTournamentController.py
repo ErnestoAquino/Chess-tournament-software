@@ -71,21 +71,6 @@ class ChessTournamentController:
         self.data_base_manager.checkpoint_players(self.tournament)
         self.tournament.current_round += 1
 
-    def create_first_round(self):
-        self.tournament.shuffle_players()
-        first_round = Model.Round(name="Round 1")
-        for i in range(0, len(self.tournament.players), 2):
-            player1 = self.tournament.players[i]
-            player2 = self.tournament.players[i + 1]
-            player1.played_players.append(player2)
-            player2.played_players.append(player1)
-            match = Model.Match(player1, player2)
-            first_round.add_mach(match)
-        self.tournament.rounds.append(first_round)
-        self.tournament.current_round += 1
-        self.data_base_manager.checkpoint_round(self.tournament.rounds)
-        self.data_base_manager.checkpoint_players(self.tournament)
-
     def generate_matches(self, previous_matches: Set[frozenset]) \
             -> List[Model.Match]:
         self.tournament.sort_players()
@@ -132,6 +117,7 @@ class ChessTournamentController:
             match.player2.played_players.append(match.player1)
             new_round.add_mach(match)
         self.tournament.rounds.append(new_round)
+        self.data_base_manager.checkpoint_round(self.tournament.rounds)
 
     def create_the_rounds(self):
         self.create_first_round()
@@ -141,6 +127,21 @@ class ChessTournamentController:
             self.present_round(self.tournament.rounds[round_number - 1])
             print(len(self.tournament.rounds[round_number - 1].list_of_matches))
             self.print_played_player()
+
+    def create_first_round(self):
+        self.tournament.shuffle_players()
+        first_round = Model.Round(name="Round 1")
+        for i in range(0, len(self.tournament.players), 2):
+            player1 = self.tournament.players[i]
+            player2 = self.tournament.players[i + 1]
+            player1.played_players.append(player2)
+            player2.played_players.append(player1)
+            match = Model.Match(player1, player2)
+            first_round.add_mach(match)
+        self.tournament.rounds.append(first_round)
+        self.tournament.current_round += 1
+        self.data_base_manager.checkpoint_round(self.tournament.rounds)
+        self.data_base_manager.checkpoint_players(self.tournament)
 
     def print_played_player(self):
         for player in self.tournament.players:
