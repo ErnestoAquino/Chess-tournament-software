@@ -56,6 +56,7 @@ class DataBaseManager:
                            "score": player.score,
                            "tournament_id": tournament_id}
             players_table.insert(player_data)
+        self.delete_unfinished_tournament()
 
     def checkpoint_creation_tournament(self, tournament: Model.Tournament):
         data_base = self.data_base_temporary_tournament
@@ -88,7 +89,7 @@ class DataBaseManager:
         matches = match_table.search(Query().round_id == round_id)
         print("================================================================================")
         print(f"round id = {round_id}")
-        print(f"number of match = {number_of_match}")
+        print(f"number of match = {number_of_match + 1}")
         print(f"result {result.name}")
         if number_of_match < len(matches):
             desired_match = matches[number_of_match]
@@ -104,10 +105,12 @@ class DataBaseManager:
     def update_end_datetime_round(self, round_id: int, datetime: str):
         rounds_table = self.data_base_temporary_tournament.table("rounds")
         desired_round = rounds_table.get(doc_id=round_id)
-        if round:
+        if desired_round:
+            print("================================================================================")
             desired_round["end_datetime"] = datetime
             rounds_table.update(desired_round)
             print(desired_round["end_datetime"])
+            print("================================================================================")
         else:
             print("No he encontrado el round")
 
@@ -135,7 +138,6 @@ class DataBaseManager:
     def checkpoint_players(self, players_to_save: Union[List[Model.Player], Model.Tournament]):
         players_table = self.data_base_temporary_tournament.table("players")
         players_table.truncate()
-        # self.data_base_temporary_tournament.close()
         if isinstance(players_to_save, List):
             for player in players_to_save:
                 player_data = {
@@ -161,6 +163,7 @@ class DataBaseManager:
 
     def checkpoint_round(self, rounds_to_save: List[Model.Round]):
         rounds_table = self.data_base_temporary_tournament.table("rounds")
+        rounds_table.truncate()
         for round in rounds_to_save:
             round_data = {
                 "name": round.name,
