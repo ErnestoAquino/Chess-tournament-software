@@ -67,7 +67,6 @@ class DataBaseManager:
             "start_date": tournament.start_date
         }
         self.tournament_temporary_id = tournaments_table.insert(tournament_data)
-        print(self.tournament_temporary_id)
 
     def checkpoint_add_tournament_description(self, description: str):
         tournament_found = \
