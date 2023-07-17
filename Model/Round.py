@@ -30,7 +30,7 @@ class Round:
     def to_dictionary(self) -> Dict:
         dictionary = {
             "name": self.name,
-            "start_date": self.start_datetime,
+            "start_datetime": self.start_datetime,
             "finished": str(self.finished),
             "matches": [match.to_dictionary() for match in self.list_of_matches]
         }
@@ -41,7 +41,7 @@ class Round:
     @classmethod
     def load_from_dictionary(cls, data: Dict[str, Any]) -> 'Round':
         round = Model.Round(data["name"])
-        round.start_datetime = data["start_date"],
+        round.start_datetime = data["start_datetime"]
         if data["finished"] == "True":
             round.set_finished()
         for data_match in data["matches"]:
