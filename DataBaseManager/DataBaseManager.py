@@ -13,6 +13,19 @@ class DataBaseManager:
         self.data_base_tournaments = TinyDB("Data/Tournaments/Tournaments.json")
         self.data_base_temporary_tournament = TinyDB("Data/Tournaments/Temporary_Tournament.json")
 
+    def load_all_players(self) -> [Model.Player]:
+        recovered_players = []
+        local_players = self.data_base_players.table("Players")
+        results = local_players.all()
+        for result in results:
+            player = Model.Player(first_name=result["first_name"],
+                                  last_name=result["last_name"],
+                                  date_of_birth=result["date_of_birth"],
+                                  chess_national_id=result["chess_national_id"],
+                                  score=result["score"])
+            recovered_players.append(player)
+        return recovered_players
+
     def save_tournament(self, tournament_to_save: Model.Tournament):
         data_base = self.data_base_tournaments
         tournaments_table = data_base.table("tournaments")
@@ -129,6 +142,16 @@ class DataBaseManager:
             "black_player_date_of_birth": match.black_player.date_of_birth,
             "black_player_chess_national_id": match.black_player.chess_national_id,
             "black_player_score": match.black_player.score,
+            "player1_first_name": match.player1.first_name,
+            "player1_last_name": match.player1.last_name,
+            "player1_date_of_birth": match.player1.date_of_birth,
+            "player1_chess_national_id": match.player1.chess_national_id,
+            "player1_score": match.player1.score,
+            "player2_first_name": match.player2.first_name,
+            "player2_last_name": match.player2.last_name,
+            "player2_date_of_birth": match.player2.date_of_birth,
+            "player2_chess_national_id": match.player2.chess_national_id,
+            "player2_score": match.player2.score,
             "result": match.result.name,
             "round_id": round_id
         }
@@ -162,6 +185,8 @@ class DataBaseManager:
 
     def checkpoint_round(self, rounds_to_save: List[Model.Round]):
         rounds_table = self.data_base_temporary_tournament.table("rounds")
+        matches_table = self.data_base_temporary_tournament.table("matches")
+        matches_table.truncate()
         rounds_table.truncate()
         for round in rounds_to_save:
             round_data = {
@@ -187,6 +212,7 @@ class DataBaseManager:
     def load_unfinished_tournament(self):
         tournament: Model.Tournament
         tournament_data = self.data_base_temporary_tournament.table("tournaments").all()[0]
+        self.tournament_temporary_id = tournament_data.doc_id
         name = tournament_data.get("name", None)
         location = tournament_data.get("location", None)
         start_date = tournament_data.get("start_date", None)
@@ -195,4 +221,19 @@ class DataBaseManager:
             print(f"Unfinished tournament name = {tournament.name}")
             print(f"Unfinished tournament location = {tournament.location}")
             print(f"Unfinished tournament start date: = {tournament.start_date}")
+            self.load_unfinished_round(id_tournament=self.tournament_temporary_id)
+            
+    def load_unfinished_round(self, id_tournament: int) -> Model.Round:
+        rounds_table = self.data_base_temporary_tournament.table("rounds")
+        rounds = rounds_table.all()
+        for round in rounds:
+            round_id = round.doc_id
+            print(round_id)
+            self.load_unfinished_match(round_id)
 
+    def load_unfinished_match(self, id_round: int):
+        matches_table = self.data_base_temporary_tournament.table("matches")
+        matches = matches_table.search(Query().round_id == id_round)
+        for match in matches:
+            print(len(matches))
+            print(match["result"])
