@@ -20,19 +20,6 @@ class ChessTournamentController:
         self.tournament = Model.Tournament(name=name, location=location)
         self.data_base_manager.checkpoint_creation_tournament(self.tournament)
 
-    # Todo This methode can be deleted
-
-    def register_player(self,
-                        first_name: str,
-                        last_name: str,
-                        date_of_birth: str,
-                        chess_national_id: str):
-        player = Model.Player(first_name=first_name,
-                              last_name=last_name,
-                              date_of_birth=date_of_birth,
-                              chess_national_id=chess_national_id)
-        self.tournament.add_player(player)
-
     def prepared_tournament(self):
         self.chess_tournament_view.display_message_tournament_creation()
         tournament_name = self.chess_tournament_view.get_user_response(information_request="Tournament Name: ")
