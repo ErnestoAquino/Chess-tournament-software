@@ -1,5 +1,6 @@
 from typing import Dict
 from typing import Any
+from typing import List
 import Model
 
 
@@ -34,17 +35,44 @@ class Player:
             print(f"{id}")
 
     def to_dictionary(self) -> Dict:
-        return {
+        dictionary = {
             "first_name": self.first_name,
             "last_name": self.last_name,
             "date_of_birth": self.date_of_birth,
             "chess_national_id": self.chess_national_id,
-            "score": self.score
+            "score": self.score,
         }
+        if self.played_players:
+            dictionary["played_players"] = self.players_to_dictionary(self.played_players)
+        return dictionary
 
     @classmethod
-    def load_from_dictionary(cls, data: Dict[str, Any]) -> 'Player':
-        player = cls.__new__(cls)
+    def load_from_dictionary(cls, data: Dict[str, Any]) -> "Player":
+        player = cls(
+            data["first_name"],
+            data["last_name"],
+            data["date_of_birth"],
+            data["chess_national_id"]
+        )
         for key, value in data.items():
-            setattr(player, key, value)
+            if key == "played_players":
+                players_data = value
+                players = [Player.load_from_dictionary(player_data) for player_data in players_data]
+                setattr(player, key, players)
+            else:
+                setattr(player, key, value)
         return player
+
+    @classmethod
+    def players_to_dictionary(cls, players: List["Player"]) -> List[Dict[str, Any]]:
+        players_list = []
+        for player in players:
+            dictionary = {
+                "first_name": player.first_name,
+                "last_name": player.last_name,
+                "date_of_birth": player.date_of_birth,
+                "chess_national_id": player.chess_national_id,
+                "score": player.score,
+            }
+            players_list.append(dictionary)
+        return players_list
