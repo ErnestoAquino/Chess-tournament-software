@@ -2,6 +2,7 @@ from tinydb import TinyDB
 from tinydb import Query
 from typing import Dict
 from typing import List
+from DataBaseManager import DataBaseManager
 import View
 import Model
 
@@ -14,17 +15,7 @@ class ReportsController:
 
     def __init__(self):
         self.reports_view = View.ReportsView()
-
-    def get_all_players(self):
-        local_players = self.DATA_BASE_PLAYERS.table("Players")
-        results = local_players.all()
-        for result in results:
-            player = Model.Player(first_name=result["first_name"],
-                                  last_name=result["last_name"],
-                                  date_of_birth=result["date_of_birth"],
-                                  chess_national_id=result["chess_national_id"],
-                                  score=result["score"])
-            self.players.append(player)
+        self.database_manager = DataBaseManager()
 
     def get_all_tournaments(self):
         local_tournaments = self.DATA_BASE_TOURNAMENTS.table("tournaments")
@@ -97,13 +88,9 @@ class ReportsController:
         match_of_round = matches_table.search(match_query.round_id == id_round)
         return match_of_round
 
-    def order_players_alphabetically(self):
-        self.players = sorted(self.players, key=lambda x: x.last_name, reverse=False)
-
     def present_report_all_players(self):
-        self.get_all_players()
-        self.order_players_alphabetically()
-        self.reports_view.display_players(self.players)
+        players_to_show = self.database_manager.get_all_players_alphabetical_order()
+        self.reports_view.display_players(players_to_show)
 
     def present_report_all_tournaments(self):
         self.get_all_tournaments()
