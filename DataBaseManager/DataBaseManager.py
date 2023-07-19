@@ -192,7 +192,7 @@ class DataBaseManager:
         recovered_players = sorted(recovered_players, key=lambda x: x.last_name, reverse=False)
         return recovered_players
 
-    def get_all_tournaments(self) -> List[Dict[str,Any]]:
+    def get_all_tournaments(self) -> List[Dict[str, Any]]:
         """
         Retrieves information about all tournaments from the database.
 
