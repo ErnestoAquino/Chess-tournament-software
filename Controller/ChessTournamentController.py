@@ -166,7 +166,7 @@ class ChessTournamentController:
         self.delete_unfinished_tournament()
 
     def build_interrupted_tournament(self):
-        tournament_information = self.data_base_manager.test_load_unfinished_tournament()
+        tournament_information = self.data_base_manager.load_unfinished_tournament()
         self.tournament = Model.Tournament.load_from_dictionary(tournament_information)
 
     def resume_tournament(self):
@@ -184,13 +184,20 @@ class ChessTournamentController:
         self.finalize_the_tournament()
 
     def finalize_the_tournament(self):
+        """
+        Finalizes the tournament.
+
+        Note:
+             Players are sorted by points, presented to the user, the tournament end date is recorded,
+             and it is saved to the database.
+        """
         self.tournament.sort_players()
         self.chess_tournament_view.display_scores(self.tournament.players)
         self.tournament.write_end_date()
         self.save_tournament()
 
     def delete_unfinished_tournament(self):
-        self.data_base_manager.test_delete_unfinished_tournament()
+        self.data_base_manager.delete_unfinished_tournament()
 
     def save_tournament_progress(self):
-        self.data_base_manager.test_check_point_tournament(self.tournament.to_dictionary())
+        self.data_base_manager.make_check_point_tournament(self.tournament.to_dictionary())
