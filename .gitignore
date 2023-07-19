@@ -161,3 +161,4 @@ cython_debug/
 .DS_Store
 Reports_Output/
 Data/Tournaments/Temporary_Tournament.json
+Data/Tournaments/Cache.json
