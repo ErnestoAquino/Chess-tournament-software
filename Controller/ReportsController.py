@@ -89,12 +89,18 @@ class ReportsController:
         return match_of_round
 
     def present_report_all_players(self):
-        players_to_show = self.database_manager.get_all_players_alphabetical_order()
-        self.reports_view.display_players(players_to_show)
+        try:
+            players_to_show = self.database_manager.get_all_players_alphabetical_order()
+            self.reports_view.display_players(players_to_show)
+        except Exception as e:
+            print(f"Error occurred while retrieving players: {e}")
 
     def present_report_all_tournaments(self):
-        self.get_all_tournaments()
-        self.reports_view.display_tournaments(self.tournaments_information)
+        try:
+            tournaments_to_show = self.database_manager.get_all_tournaments()
+            self.reports_view.display_tournaments(tournaments_to_show)
+        except Exception as e:
+            print(f"Error occurred while retrieving tournaments: {e}")
 
     def present_report_one_tournament(self):
         self.get_all_tournaments()
