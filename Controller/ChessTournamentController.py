@@ -1,5 +1,4 @@
 from typing import List
-from typing import Set
 import itertools
 import DataBaseManager
 import Model
@@ -7,20 +6,37 @@ import View
 
 
 class ChessTournamentController:
-    NUMBER_CHESS_PLAYERS: int
+    """
+        Controller class for managing a chess tournament.
+    """
     response: str = None
 
-    def __init__(self, number_chess_players: int = 4):
+    def __init__(self):
+        """
+        Initializes the ChessTournamentController.
+        """
         self.tournament = None
-        self.NUMBER_CHESS_PLAYERS = number_chess_players
         self.chess_tournament_view = View.ChessTournamentView()
         self.data_base_manager = DataBaseManager.DataBaseManager()
 
     def create_tournament(self, name: str, location: str):
+        """
+        Creates a new tournament with the given name and location.
+
+        Args:
+            name (str): The name of the tournament.
+            location (str): The location of the tournament.
+
+        Returns:
+            None
+        """
         self.tournament = Model.Tournament(name=name, location=location)
-        self.data_base_manager.checkpoint_creation_tournament(self.tournament)
+        self.save_tournament_progress()
 
     def prepared_tournament(self):
+        """
+        Prepares the tournament by gathering required information from the user.
+        """
         self.chess_tournament_view.display_message_tournament_creation()
         tournament_name = self.chess_tournament_view.get_user_response(information_request="Tournament Name: ")
         tournament_location = self.chess_tournament_view.get_user_response(
@@ -28,50 +44,42 @@ class ChessTournamentController:
         self.create_tournament(tournament_name, tournament_location)
         tournament_description = self.chess_tournament_view.get_user_response(information_request="Tournament "
                                                                                                   "Description: ")
-        self.data_base_manager.checkpoint_add_tournament_description(tournament_description)
         self.tournament.write_description(tournament_description)
+        self.save_tournament_progress()
 
     def start_tournament(self):
         self.prepared_tournament()
         self.chess_tournament_view.display_tournament_information(self.tournament)
         self.tournament.load_players()
-        self.data_base_manager.checkpoint_players(self.tournament)
-        self.chess_tournament_view.display_scores(self.tournament.players)
+        self.save_tournament_progress()
         self.create_the_rounds()
-        self.tournament.sort_players()
-        self.chess_tournament_view.display_scores(self.tournament.players)
-        self.tournament.write_end_date()
-        self.save_tournament()
+        self.finalize_the_tournament()
 
     def present_round(self, round_to_show: Model.Round):
+        """
+        "Presents a round of the tournament to the user for entering the result of each match in the round."
+
+        Args:
+            round_to_show (Model.Round): The round to present.
+        """
         self.chess_tournament_view.display_round(round_to_show)
         for i, match in enumerate(round_to_show.list_of_matches):
             self.chess_tournament_view.display_match(match, number_match=i)
-            result = self.chess_tournament_view.get_result_of_match()
-            match.set_result(result)
-            self.data_base_manager.update_result_match(self.tournament.current_round,
-                                                       number_of_match=i,
-                                                       result=result)
+            if match.result == Model.Result.TO_BE_PLAYED:
+                result = self.chess_tournament_view.get_result_of_match()
+                match.set_result(result)
+            self.save_tournament_progress()
         round_to_show.write_end_datetime()
-        self.data_base_manager.update_end_datetime_round(round_id=self.tournament.current_round,
-                                                         datetime=round_to_show.end_datetime)
-        self.data_base_manager.checkpoint_players(self.tournament)
         self.tournament.current_round += 1
+        self.save_tournament_progress()
 
-    def generate_matches(self, previous_matches: Set[frozenset]) \
-            -> List[Model.Match]:
-        self.tournament.sort_players()
-        pairings = []
-        available_players = self.tournament.players[:]
-        for i in range(0, len(available_players), 2):
-            player1 = available_players[i]
-            player2 = available_players[i + 1]
-            if not any({player1, player2} == match or {player2, player1} == match for match in previous_matches):
-                pairings.append(Model.Match(player1, player2))
-                previous_matches.add(frozenset({player1, player2}))
-        return pairings
+    def generate_matches(self) -> List[Model.Match]:
+        """
+        Generates the matches for a round of the tournament.
 
-    def generate_matches_test(self) -> List[Model.Match]:
+        Returns:
+            List[Model.Match]: The generated matches.
+        """
         self.tournament.sort_players()
         pairings = []
         paired_players = []
@@ -96,26 +104,43 @@ class ChessTournamentController:
         return pairings
 
     def create_round(self, number_of_round: int):
+        """
+        Creates a new round for the tournament.
+
+        Args:
+            number_of_round (int): The number of the round to create.
+        """
         self.tournament.sort_players()
         new_round = Model.Round(name=f"Round {number_of_round}")
-        pairings = self.generate_matches_test()
+        pairings = self.generate_matches()
         for match in pairings:
             match.player1.played_players.append(match.player2)
             match.player2.played_players.append(match.player1)
             new_round.add_mach(match)
         self.tournament.rounds.append(new_round)
-        self.data_base_manager.checkpoint_round(self.tournament.rounds)
+        self.save_tournament_progress()
 
     def create_the_rounds(self):
+        """
+        Creates all the rounds for the tournament.
+        """
         self.create_first_round()
         self.present_round(round_to_show=self.tournament.rounds[0])
+        self.save_tournament_progress()
         for round_number in range(2, self.tournament.number_of_rounds + 1):
             self.create_round(round_number)
             self.present_round(self.tournament.rounds[round_number - 1])
+            self.save_tournament_progress()
             print(len(self.tournament.rounds[round_number - 1].list_of_matches))
             self.print_played_player()
 
     def create_first_round(self):
+        """
+        Creates the first round of the tournament.
+
+        Note:
+            The first round, shuffle the players randomly.
+        """
         self.tournament.shuffle_players()
         first_round = Model.Round(name="Round 1")
         for i in range(0, len(self.tournament.players), 2):
@@ -127,19 +152,45 @@ class ChessTournamentController:
             first_round.add_mach(match)
         self.tournament.rounds.append(first_round)
         self.tournament.current_round += 1
-        self.data_base_manager.checkpoint_round(self.tournament.rounds)
-        self.data_base_manager.checkpoint_players(self.tournament)
+        self.save_tournament_progress()
 
     def print_played_player(self):
         for player in self.tournament.players:
             print(f"{player.first_name}")
-            player.test_print_opponents()
+            player.print_opponents()
 
     def save_tournament(self):
         # Todo Esto impide guardar el torneo
         # self.data_base_manager.save_tournament(self.tournament)
-        self.data_base_manager.delete_unfinished_tournament()
-        pass
+        # self.data_base_manager.delete_unfinished_tournament()
+        self.delete_unfinished_tournament()
 
-    def load_interrupted_tournament(self):
-        pass
+    def build_interrupted_tournament(self):
+        tournament_information = self.data_base_manager.test_load_unfinished_tournament()
+        self.tournament = Model.Tournament.load_from_dictionary(tournament_information)
+
+    def resume_tournament(self):
+        self.build_interrupted_tournament()
+        current_round_index = self.tournament.current_round - 1
+        current_round = self.tournament.rounds[current_round_index]
+        self.present_round(current_round)
+        self.save_tournament_progress()
+        for round_number in range(len(self.tournament.rounds) + 1, self.tournament.number_of_rounds + 1):
+            self.create_round(round_number)
+            self.present_round(self.tournament.rounds[round_number - 1])
+            self.save_tournament_progress()
+            print(len(self.tournament.rounds[round_number - 1].list_of_matches))
+            self.print_played_player()
+        self.finalize_the_tournament()
+
+    def finalize_the_tournament(self):
+        self.tournament.sort_players()
+        self.chess_tournament_view.display_scores(self.tournament.players)
+        self.tournament.write_end_date()
+        self.save_tournament()
+
+    def delete_unfinished_tournament(self):
+        self.data_base_manager.test_delete_unfinished_tournament()
+
+    def save_tournament_progress(self):
+        self.data_base_manager.test_check_point_tournament(self.tournament.to_dictionary())
