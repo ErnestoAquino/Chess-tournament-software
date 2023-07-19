@@ -2,6 +2,7 @@ from tinydb import TinyDB
 from typing import Any
 from typing import Optional
 from typing import Dict
+from typing import List
 import Model
 
 
@@ -17,6 +18,28 @@ class DataBaseManager:
         self.data_base_players = TinyDB("Data/Players/Players.json")
         self.data_base_tournaments = TinyDB("Data/Tournaments/Tournaments.json")
         self.data_base_cache = TinyDB("Data/Tournaments/Cache.json")
+
+    def save_players(self, players_to_save: List[Model.Player]):
+        """
+        Save a list of players to the database.
+
+        Args:
+            players_to_save (List[Model.Player]): A list of Player objects to be saved.
+
+        Raises:
+            DataError: If there is an issue with the database operation.
+        """
+        players_table = self.data_base_players.table("Players")
+        try:
+            for player in players_to_save:
+                player_data = {"first_name": player.first_name,
+                               "last_name": player.last_name,
+                               "date_of_birth": player.date_of_birth,
+                               "chess_national_id": player.chess_national_id,
+                               "score": player.score}
+                players_table.insert(player_data)
+        except Exception as e:
+            print(f"Error occurred while saving players: {e}")
 
     def load_all_players(self) -> [Model.Player]:
         """
