@@ -47,7 +47,7 @@ class ReportsView:
         self.save_report_as_html_file(rendered_template=html_output,
                                       output_file_name="report_all_players_output.html")
 
-    def display_tournaments(self, tournaments: []):
+    def display_tournaments(self, tournaments: List[Dict[str, Any]]):
         template = self.env.get_template("Templates/report_all_tournaments.html")
         tournaments_to_show = []
 
@@ -80,7 +80,7 @@ class ReportsView:
         print("Please, select a tournament:\n")
         for i, tournament in enumerate(tournaments, 1):
             print(f"{i} - {tournament['name']}")
-        user_choice = self.get_choice(number_of_options=len(tournaments),options_to_show="")
+        user_choice = self.get_choice(number_of_options=len(tournaments), options_to_show="")
         return user_choice
 
     def check_if_folder_exist(self):
