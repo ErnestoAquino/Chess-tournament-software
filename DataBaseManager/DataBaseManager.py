@@ -168,3 +168,54 @@ class DataBaseManager:
         """
         tournament_table = self.data_base_cache.table("tournaments")
         tournament_table.truncate()
+
+    def get_all_players_alphabetical_order(self) -> List[Model.Player]:
+        """
+        Retrieves all players from the database and returns them in alphabetical order based on last names.
+
+        Returns:
+            List[Model.Player]: A list of Player objects sorted in alphabetical order based on last names.
+        Raises:
+            Exception: If there is an issue with accessing the database or retrieving the players.
+        """
+        recovered_players: List[Model.Player] = []
+        try:
+            players_table = self.data_base_players.table("Players")
+            results = players_table.all()
+            for result in results:
+                player = Model.Player.load_from_dictionary(result)
+                recovered_players.append(player)
+        except Exception as e:
+            # Handle the case where the database does not exist or is empty
+            print(f"Error occurred while retrieving players: {e}")
+            raise Exception("Failed to retrieve players from the database.")
+        recovered_players = sorted(recovered_players, key=lambda x: x.last_name, reverse=False)
+        return recovered_players
+
+    def get_all_tournaments(self) -> List[Dict[str,Any]]:
+        """
+        Retrieves information about all tournaments from the database.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries, each containing information about a tournament.
+        Raises:
+            Exception: If there is an issue with accessing the database or retrieving the tournament information.
+        """
+        tournament_information: List[Dict[str, Any]] = []
+        try:
+            table_tournaments = self.data_base_tournaments.table("tournaments")
+            results = table_tournaments.all()
+            for result in results:
+                new_tournament = {
+                    "name": result["name"],
+                    "location": result["location"],
+                    "start_date": result["start_date"],
+                    "end_date": result["end_date"],
+                    "number_of_rounds": result["number_of_rounds"]
+                }
+                tournament_information.append(new_tournament)
+        except Exception as e:
+            # Handle the case where the database does not exist or is empty
+            print(f"Error occurred while retrieving tournament information: {e}")
+            raise Exception("Failed to retrieve tournament information from the database.")
+        return tournament_information
