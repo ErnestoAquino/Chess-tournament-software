@@ -103,10 +103,15 @@ class ReportsController:
             print(f"Error occurred while retrieving tournaments: {e}")
 
     def present_report_one_tournament(self):
-        self.get_all_tournaments()
-        user_choice = self.reports_view.show_available_tournaments(self.tournaments_information)
-        tournament = self.get_one_tournament(id_tournament=user_choice)
-        self.reports_view.display_one_tournament(tournament)
+        try:
+            available_tournaments = self.database_manager.get_all_tournaments()
+            user_choice = self.reports_view.show_available_tournaments(available_tournaments)
+            selected_tournament = self.database_manager.get_one_tournament(id_tournament=user_choice)
+            self.reports_view.display_one_tournament(selected_tournament)
+        except Exception as e:
+            print(f"Error occurred while retrieving tournaments: {e}")
+
+
 
     def present_report_tournament_players(self):
         self.get_all_tournaments()

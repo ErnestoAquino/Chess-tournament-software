@@ -58,7 +58,7 @@ class ReportsView:
         self.save_report_as_html_file(rendered_template=html_output,
                                       output_file_name="report_all_tournaments_output.html")
 
-    def display_one_tournament(self, tournament_to_show: Dict):
+    def display_one_tournament(self, tournament_to_show: Dict[str, Any]):
         template = self.env.get_template("Templates/report_one_tournament.html")
         html_output = template.render(tournament=tournament_to_show)
         self.save_report_as_html_file(rendered_template=html_output,

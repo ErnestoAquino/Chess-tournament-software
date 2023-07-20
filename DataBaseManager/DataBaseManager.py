@@ -219,3 +219,24 @@ class DataBaseManager:
             print(f"Error occurred while retrieving tournament information: {e}")
             raise Exception("Failed to retrieve tournament information from the database.")
         return tournament_information
+
+    def get_one_tournament(self, id_tournament: int) -> Dict[str, Any]:
+        """Get information about a specific tournament from the database.
+
+        Args:
+            id_tournament (int): The ID of the tournament to retrieve.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the information of the tournament.
+
+        Raises:
+            Any Exception: If an error occurs while trying to retrieve the tournament information.
+        """
+        try:
+            results = self.data_base_tournaments.table("tournaments")
+            selected_tournament = results.get(doc_id=id_tournament)
+            return selected_tournament
+        except Exception as e:
+            # Handle the case where the database does not exist or is empty
+            print(f"Error occurred while retrieving tournament information: {e}")
+            raise Exception("Failed to retrieve tournament information from the database.")
