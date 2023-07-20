@@ -1,133 +1,29 @@
-from tinydb import TinyDB
-from tinydb import Query
-from typing import Dict
-from typing import List
 from DataBaseManager import DataBaseManager
 import View
-import Model
 
 
 class ReportsController:
-    DATA_BASE_PLAYERS = TinyDB("Data/Players/Players.json")
-    DATA_BASE_TOURNAMENTS = TinyDB("Data/Tournaments/Tournaments.json")
-    players = []
-    tournaments_information = []
+    """
+    This class handles the presentation of reports to the user.
+
+    Attributes:
+        reports_view (View.ReportsView): An instance of ReportsView for displaying reports.
+        database_manager (DataBaseManager): An instance of DataBaseManager for retrieving data from the database.
+    """
 
     def __init__(self):
+        """
+        Initialize the ReportsController with ReportsView and DataBaseManager instances.
+        """
         self.reports_view = View.ReportsView()
         self.database_manager = DataBaseManager()
 
-    def get_all_tournaments(self):
-        local_tournaments = self.DATA_BASE_TOURNAMENTS.table("tournaments")
-        results = local_tournaments.all()
-
-        for result in results:
-            new_tournament = {
-                "name": result["name"],
-                "location": result["location"],
-                "start_date": result["start_date"],
-                "end_date": result["end_date"],
-                "number_of_rounds": result["number_of_rounds"]
-            }
-            self.tournaments_information.append(new_tournament)
-
-    def get_one_tournament(self, id_tournament: int):
-        results = self.DATA_BASE_TOURNAMENTS.table("tournaments")
-        tournament = results.get(doc_id=id_tournament)
-        return tournament
-
-    def get_players_from(self, id_tournament: int):
-        local_players = self.DATA_BASE_TOURNAMENTS.table("players")
-        player_query = Query()
-        players_in_tournament = local_players.search(player_query.tournament_id == id_tournament)
-        ordered_players = sorted(players_in_tournament, key=lambda player: player["last_name"], reverse=False)
-        return ordered_players
-
-    def get_name_tournament(self, id_tournament: int) -> str:
-        tournaments_table = self.DATA_BASE_TOURNAMENTS.table("tournaments")
-        tournament = tournaments_table.get(doc_id=id_tournament)
-        return tournament["name"]
-
-    def get_rounds_from(self, id_tournament: int) -> List[Dict]:
-        rounds_table = self.DATA_BASE_TOURNAMENTS.table("rounds")
-        round_query = Query()
-        rounds = rounds_table.search(round_query.tournament_id == id_tournament)
-        for round_i in rounds:
-            print(f"{round_i['name']} - {round_i['start_date']} to {round_i['end_date']}")
-            matches = self.get_matches_from(id_round=round_i.doc_id)
-            for match in matches:
-                print(f"{match['white_player']} played whites pieces  VS \
-                        {match['black_player']} played with black pieces. Result: {match['result']} white player.")
-        return rounds
-
-    def test_get_rounds_from(self, id_tournament: int) -> List[Dict]:
-        rounds_table = self.DATA_BASE_TOURNAMENTS.table("rounds")
-        round_query = Query()
-        rounds = rounds_table.search(round_query.tournament_id == id_tournament)
-        for round_i in rounds:
-            print(f"{round_i['name']} - {round_i['start_date']} to {round_i['end_date']}")
-            round_i['matches'] = []
-            matches = self.get_matches_from(id_round=round_i.doc_id)
-            for match in matches:
-                match_data = {
-                    "white_payer": match["white_player_first_name"] + " " + match["white_player_last_name"],
-                    "white_player_id": match["white_player_chess_national_id"],
-                    "black_player": match["black_player_first_name"] + " " + match["black_player_last_name"],
-                    "black_player_id": match["black_player_chess_national_id"],
-                    "result": match["result"]
-                }
-                round_i["matches"].append(match_data)
-                print(f"{match['white_player_first_name']} played whites pieces  VS \
-                        {match['black_player_first_name']} played with black pieces. Result: {match['result']} white "
-                      f"player.")
-        return rounds
-
-    def get_matches_from(self, id_round: int) -> List[Dict]:
-        matches_table = self.DATA_BASE_TOURNAMENTS.table("matches")
-        match_query = Query()
-        match_of_round = matches_table.search(match_query.round_id == id_round)
-        return match_of_round
-
-    def present_report_all_players(self):
-        try:
-            players_to_show = self.database_manager.get_all_players_alphabetical_order()
-            self.reports_view.display_players(players_to_show)
-        except Exception as e:
-            print(f"Error occurred while retrieving players: {e}")
-
-    def present_report_all_tournaments(self):
-        try:
-            tournaments_to_show = self.database_manager.get_all_tournaments()
-            self.reports_view.display_tournaments(tournaments_to_show)
-        except Exception as e:
-            print(f"Error occurred while retrieving tournaments: {e}")
-
-    def present_report_one_tournament(self):
-        try:
-            available_tournaments = self.database_manager.get_all_tournaments()
-            user_choice = self.reports_view.show_available_tournaments(available_tournaments)
-            selected_tournament = self.database_manager.get_one_tournament(id_tournament=user_choice)
-            self.reports_view.display_one_tournament(selected_tournament)
-        except Exception as e:
-            print(f"Error occurred while retrieving tournaments: {e}")
-
-
-
-    def present_report_tournament_players(self):
-        self.get_all_tournaments()
-        user_choice = self.reports_view.show_available_tournaments(self.tournaments_information)
-        players = self.get_players_from(id_tournament=user_choice)
-        tournament_name = self.get_name_tournament(id_tournament=user_choice)
-        self.reports_view.display_players_alphabetical_order(players, tournament_name)
-
-    def present_report_all_round_from_tournament(self):
-        self.get_all_tournaments()
-        user_choice = self.reports_view.show_available_tournaments(self.tournaments_information)
-        tournament = self.get_one_tournament(id_tournament=user_choice)
-        rounds = self.test_get_rounds_from(id_tournament=user_choice)
-        self.reports_view.display_rounds_from_tournament(tournament, rounds)
-
     def start(self):
+        """
+        Start the presentation of reports by letting the user choose from different options.
+
+        The user is presented with a menu to select the type of report they want to see.
+        """
         user_choice = self.reports_view.get_choice(number_of_options=5,
                                                    options_to_show=self.reports_view.MESSAGE_OPTIONS)
         self.reports_view.check_if_folder_exist()
@@ -142,3 +38,96 @@ class ReportsController:
                 self.present_report_tournament_players()
             case 5:
                 self.present_report_all_round_from_tournament()
+
+    def present_report_all_players(self):
+        """
+        Presents a report with all players in alphabetical order.
+
+        This method retrieves all players in alphabetical order, sends it to the view to display the report.
+        If an error occurs while retrieving the data, it will be caught and an error message will be displayed.
+
+        Raises:
+            Exception: If there is an error while retrieving player information from the database.
+        """
+        try:
+            players_to_show = self.database_manager.get_all_players_alphabetical_order()
+            self.reports_view.display_players(players_to_show)
+        except Exception as e:
+            print(f"Error occurred while retrieving players: {e}")
+
+    def present_report_all_tournaments(self):
+        """
+        Presents a report with all tournaments available.
+
+        This method retrieves tournament information from the database and sends it to the view to display the report.
+        If an error occurs while retrieving the data, it will be caught and an error message will be displayed.
+
+        Raises:
+            Exception: If there is an error while retrieving tournament information from the database.
+        """
+        try:
+            tournaments_to_show = self.database_manager.get_all_tournaments()
+            self.reports_view.display_tournaments(tournaments_to_show)
+        except Exception as e:
+            print(f"Error occurred while retrieving tournaments: {e}")
+
+    def present_report_one_tournament(self):
+        """
+        Presents a report with detailed information about a selected tournament.
+
+        The user selects a tournament from the available tournaments, and this method retrieves
+        detailed information about that tournament from the database and sends it to the view to display the report.
+        If an error occurs while retrieving the data, it will be caught and an error message will be displayed.
+
+        Raises:
+            Exception: If there is an error while retrieving tournament information from the database.
+        """
+        try:
+            available_tournaments = self.database_manager.get_all_tournaments()
+            user_choice = self.reports_view.show_available_tournaments(available_tournaments)
+            selected_tournament = self.database_manager.get_one_tournament(id_tournament=user_choice)
+            self.reports_view.display_one_tournament(selected_tournament)
+        except Exception as e:
+            print(f"Error occurred while retrieving tournaments: {e}")
+
+    def present_report_tournament_players(self):
+        """
+         Presents a report with players participating in a selected tournament.
+
+         The user selects a tournament from the available tournaments, and this method retrieves
+         information about players participating in that tournament from the database
+         and sends it to the view to display the report.
+         If an error occurs while retrieving the data, it will be caught and an error message will be displayed.
+
+         Raises:
+             Exception: If there is an error while retrieving players' tournament information from the database.
+         """
+        try:
+            available_tournaments = self.database_manager.get_all_tournaments()
+            user_choice = self.reports_view.show_available_tournaments(available_tournaments)
+            players = self.database_manager.get_players_from(id_tournament=user_choice)
+            tournament_name = self.database_manager.get_name_tournament(id_tournament=user_choice)
+            self.reports_view.display_players_alphabetical_order(players, tournament_name)
+        except Exception as e:
+            print(f"Error occurred while retrieving players tournament: {e}")
+
+    def present_report_all_round_from_tournament(self):
+        """
+        Presents a report with all rounds and all matches from a selected tournament.
+
+        The user selects a tournament from the available tournaments, and this method retrieves
+        information about all rounds from that tournament from the database
+        and sends it to the view to display the report.
+        If an error occurs while retrieving the data, it will be caught and an error message will be displayed.
+
+        Raises:
+            Exception: If there is an error while retrieving tournament or rounds information from the database.
+        """
+        try:
+            available_tournament = self.database_manager.get_all_tournaments()
+            user_choice = self.reports_view.show_available_tournaments(available_tournament)
+            selected_tournament = self.database_manager.get_one_tournament(id_tournament=user_choice)
+            rounds_of_tournament = self.database_manager.get_rounds_from(id_tournament=user_choice)
+            self.reports_view.display_rounds_from_tournament(selected_tournament, rounds_of_tournament)
+        except Exception as e:
+            print(f"Error occurred while retrieving tournament or rounds information: {e}")

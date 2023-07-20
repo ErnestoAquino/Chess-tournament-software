@@ -1,4 +1,5 @@
 from tinydb import TinyDB
+from tinydb import Query
 from typing import Any
 from typing import Optional
 from typing import Dict
@@ -240,3 +241,75 @@ class DataBaseManager:
             # Handle the case where the database does not exist or is empty
             print(f"Error occurred while retrieving tournament information: {e}")
             raise Exception("Failed to retrieve tournament information from the database.")
+
+    def get_players_from(self, id_tournament: int) -> List[Dict[str, Any]]:
+        """
+        Retrieves the list of players participating in the tournament with the given ID from the database.
+
+        Parameters:
+            id_tournament (int): The ID of the tournament to retrieve players from.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries containing player information.
+
+        Raises:
+            Exception: If there is an error while retrieving player information from the database.
+        """
+        try:
+            table_players = self.data_base_tournaments.table("players")
+            players_in_tournament = table_players.search(Query().tournament_id == id_tournament)
+            recovered_players = sorted(players_in_tournament, key=lambda player: player["last_name"], reverse=False)
+            return recovered_players
+        except Exception as e:
+            # Handle the case where the database does not exist or is empty
+            print(f"Error occurred while retrieving players information: {e}")
+            raise Exception("Failed to retrieve players information from the database.")
+
+    def get_name_tournament(self, id_tournament: int) -> str:
+        """
+        Retrieves the name of the tournament with the given ID from the database.
+
+        Parameters:
+            id_tournament (int): The ID of the tournament to retrieve.
+
+        Returns:
+            str: The name of the selected tournament.
+
+        Raises:
+            Exception: If there is an error while retrieving the tournament name from the database.
+        """
+        try:
+            table_tournaments = self.data_base_tournaments.table("tournaments")
+            selected_tournament = table_tournaments.get(doc_id=id_tournament)
+            return selected_tournament["name"]
+        except Exception as e:
+            # Handle the case where the database does not exist or is empty
+            print(f"Error occurred while retrieving tournament name information: {e}")
+            raise Exception("Failed to retrieve tournament name information from the database.")
+
+    def get_rounds_from(self, id_tournament: int) -> List[Dict[str, Any]]:
+        table_rounds = self.data_base_tournaments.table("rounds")
+        recovered_rounds = table_rounds.search(Query().tournament_id == id_tournament)
+        for round in recovered_rounds:
+            round["matches"] = []
+            matches = self.get_matches_from(id_round=round.doc_id)
+            if matches is not None:
+                for match in matches:
+                    match_data = {
+                        "white_payer": match["white_player_first_name"] + " " + match["white_player_last_name"],
+                        "white_player_id": match["white_player_chess_national_id"],
+                        "black_player": match["black_player_first_name"] + " " + match["black_player_last_name"],
+                        "black_player_id": match["black_player_chess_national_id"],
+                        "result": match["result"]
+                    }
+                    round["matches"].append(match_data)
+        return recovered_rounds
+
+    def get_matches_from(self, id_round: int) -> Optional[List[Dict]]:
+        try:
+            table_matches = self.data_base_tournaments.table("matches")
+            recovered_matches = table_matches.search(Query().round_id == id_round)
+            return recovered_matches
+        except Exception as e:
+            print(f"Error occurred while retrieving matches information: {e}")
+            return None
