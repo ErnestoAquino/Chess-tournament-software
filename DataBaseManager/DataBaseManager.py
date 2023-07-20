@@ -85,7 +85,6 @@ class DataBaseManager:
                            "start_date": tournament_to_save.start_date,
                            "end_date": tournament_to_save.end_datetime,
                            "number_of_rounds": tournament_to_save.number_of_rounds}
-        print(tournament_data)
         tournament_id = tournaments_table.insert(tournament_data)
         for round_i in tournament_to_save.rounds:
             round_data = {"name": round_i.name,
@@ -288,28 +287,56 @@ class DataBaseManager:
             raise Exception("Failed to retrieve tournament name information from the database.")
 
     def get_rounds_from(self, id_tournament: int) -> List[Dict[str, Any]]:
-        table_rounds = self.data_base_tournaments.table("rounds")
-        recovered_rounds = table_rounds.search(Query().tournament_id == id_tournament)
-        for round in recovered_rounds:
-            round["matches"] = []
-            matches = self.get_matches_from(id_round=round.doc_id)
-            if matches is not None:
-                for match in matches:
-                    match_data = {
-                        "white_payer": match["white_player_first_name"] + " " + match["white_player_last_name"],
-                        "white_player_id": match["white_player_chess_national_id"],
-                        "black_player": match["black_player_first_name"] + " " + match["black_player_last_name"],
-                        "black_player_id": match["black_player_chess_national_id"],
-                        "result": match["result"]
-                    }
-                    round["matches"].append(match_data)
-        return recovered_rounds
+        """
+        Retrieve the rounds for a given tournament ID, along with their match information.
+
+         Args:
+             id_tournament (int): The ID of the tournament for which to retrieve rounds.
+
+         Returns:
+             List[Dict[str, Any]]: A list of dictionaries representing the rounds and their matches
+                                   for the given tournament.
+         """
+        try:
+            table_rounds = self.data_base_tournaments.table("rounds")
+            recovered_rounds = table_rounds.search(Query().tournament_id == id_tournament)
+            for round_data in recovered_rounds:
+                round_data["matches"] = []
+                matches = self.get_matches_from(id_round=round_data.doc_id)
+
+                if matches is not None:
+                    for match in matches:
+                        match_data = {
+                            "white_payer": match["white_player_first_name"] + " " + match["white_player_last_name"],
+                            "white_player_id": match["white_player_chess_national_id"],
+                            "black_player": match["black_player_first_name"] + " " + match["black_player_last_name"],
+                            "black_player_id": match["black_player_chess_national_id"],
+                            "result": match["result"]
+                        }
+                        round_data["matches"].append(match_data)
+
+            return recovered_rounds
+        except Exception as e:
+            # Handle the case where the database does not exist or is empty
+            print(f"Error occurred while retrieving tournament name information: {e}")
+            raise Exception("Failed to retrieve tournament name information from the database.")
 
     def get_matches_from(self, id_round: int) -> Optional[List[Dict]]:
+        """
+        Retrieve the matches from the database for a given round ID.
+
+        Args:
+            id_round (int): The ID of the round for which to retrieve matches.
+
+        Returns:
+            Optional[List[Dict]]: A list of dictionaries representing the matches for the given round,
+                                  or None if no matches are found or an error occurs during retrieval.
+        """
         try:
             table_matches = self.data_base_tournaments.table("matches")
             recovered_matches = table_matches.search(Query().round_id == id_round)
             return recovered_matches
         except Exception as e:
+            # Handle the case where the database does not exist or is empty
             print(f"Error occurred while retrieving matches information: {e}")
             return None
