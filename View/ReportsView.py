@@ -102,7 +102,8 @@ class ReportsView:
             tournament_name (str): The name of the tournament for which the players are displayed.
 
         Notes:
-            This method generates an HTML report with a list of players in alphabetical order for a specific tournament.
+            This method generates an HTML report with a list of players in alphabetical order
+            for a specific tournament.
             The template used for rendering is "Templates/report_players.html".
             The rendered report is saved to a file
             named "report_players_output.html" in the "Reports_Output" folder.
