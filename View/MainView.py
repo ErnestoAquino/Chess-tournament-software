@@ -18,6 +18,15 @@ class MainView:
     response: str = None
 
     def get_choice(self) -> int:
+        """
+        Get the user's choice from the available options.
+
+        Returns:
+            int: The user's choice as an integer.
+
+        Notes:
+            This method displays the options menu and keeps prompting the user until a valid choice is made.
+        """
         numero = -1
         print(self.apply_color(self.WELCOME_MESSAGE, Fore.GREEN))
         print(self.apply_color(self.OPTION_MENU, Fore.LIGHTBLUE_EX))
@@ -33,6 +42,15 @@ class MainView:
         return numero
 
     def get_yes_or_no_choice(self) -> str:
+        """
+        Get the user's response to a yes-or-no question.
+
+        Returns:
+            str: The user's response, either 'yes' or 'no'.
+
+        Notes:
+            This method keeps prompting the user until a valid response of 'yes' or 'no' is provided.
+        """
         self.response = str(input(self.apply_color(self.MESSAGE_UNFINISHED_TOURNAMENT, Fore.GREEN)))
         while not (self.response.lower() == "yes" or self.response.lower() == "no"):
             self.response = str(input(self.apply_color(self.RESPONSE_INSTRUCTION, Fore.LIGHTRED_EX))).lower()
@@ -40,6 +58,19 @@ class MainView:
 
     @staticmethod
     def apply_color(text: str, color: Fore) -> str:
+        """
+        Apply color to the given text.
+
+        Args:
+            text (str): The text to which color will be applied.
+            color (Fore): The color from the colorama.Fore enum.
+
+        Returns:
+            str: The colored text.
+
+        Notes:
+            This method applies the specified color to the text using the colorama library.
+        """
         init()
         colored_text = f"{color}{text}{Fore.RESET}"
         return colored_text

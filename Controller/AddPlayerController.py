@@ -27,7 +27,7 @@ class AddPlayerController:
         This method uses the AddPlayerView to prompt the user for player information,
         and then stores the entered players in the 'players' attribute.
         """
-        self.players = self.add_player_view.players_to_save()
+        self.players = self.add_player_view.get_players_to_save()
         self.save_players()
 
     def save_players(self):

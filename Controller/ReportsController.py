@@ -26,7 +26,6 @@ class ReportsController:
         """
         user_choice = self.reports_view.get_choice(number_of_options=5,
                                                    options_to_show=self.reports_view.MESSAGE_OPTIONS)
-        self.reports_view.check_if_folder_exist()
         match user_choice:
             case 1:
                 self.present_report_all_players()
