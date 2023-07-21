@@ -160,4 +160,5 @@ cython_debug/
 .idea/
 .DS_Store
 Reports_Output/
+flake8_reports/
 Data/Tournaments/Cache.json
