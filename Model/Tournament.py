@@ -1,7 +1,9 @@
 import random
+import itertools
 from typing import Dict
 from typing import Any
 from typing import List
+from typing import Set
 import datetime
 import Model
 import DataBaseManager
@@ -123,3 +125,62 @@ class Tournament:
         tournament.players = [Model.Player.load_from_dictionary(player_data) for player_data in data["players"]]
         tournament.rounds = [Model.Round.load_from_dictionary(round_data) for round_data in data["rounds"]]
         return tournament
+
+    def generate_matches(self) -> List[Model.Match]:
+        """
+        Generates pairings (matches) between players for a tournament.
+
+        Returns:
+            List[Model.Match]: A list of Model.Match objects representing the generated pairings.
+
+        Raises:
+            ValueError: If there are not enough players to generate fair pairings.
+
+        Note:
+            Pairings are generated in a way that ensures each player faces an opponent they have not played before.
+            If there are not enough players to generate a fair set of matches, a ValueError is raised.
+        """
+        pairings: List[Model.Match] = []
+        paired_players: Set[tuple] = set()
+        players_with_pair: Set[Model.Player] = set()
+
+        # Check if there are enough players to generate fair pairings
+        num_players = len(self.players)
+        if num_players < 2:
+            raise ValueError("At least 2 players are required to generate fair pairings.")
+
+        for player in self.players:
+            possible_pairs = itertools.combinations(self.players, 2)
+
+            # Generate all possible combinations of 2 players (possible pairings)
+            for pair in possible_pairs:
+                # Check if both players in the pairing have not faced each other before,
+                # and if the current player matches the first player in the pairing.
+                if (pair[1].chess_national_id not in pair[0].id_played and
+                    pair[0].chess_national_id not in pair[1].id_played and
+
+                        player == pair[0] and
+                        pair not in paired_players and
+                        pair[0] not in players_with_pair and
+                        pair[1] not in players_with_pair):
+                    paired_players.add(pair)
+                    player1, player2 = pair
+
+                    # Create a match between the two players and add it to the pairings list
+                    match = Model.Match(player1, player2)
+                    pairings.append(match)
+
+                    # Update sets to keep track of paired players
+                    players_with_pair.add(pair[0])
+                    players_with_pair.add(pair[1])
+
+        # If the number of matches is less than half the number of players,
+        # reorganize the players to generate more pairings
+        while len(pairings) < (len(self.players) / 2):
+            last_player = self.players.pop()
+            self.players.insert(0, last_player)
+
+            # Recursively call itself to generate more pairings with the newly organized players list
+            pairings = self.generate_matches()
+
+        return pairings
