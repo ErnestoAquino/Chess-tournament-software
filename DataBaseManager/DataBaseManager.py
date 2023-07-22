@@ -113,6 +113,7 @@ class DataBaseManager:
                            "date_of_birth": player.date_of_birth,
                            "chess_national_id": player.chess_national_id,
                            "score": player.score,
+                           "id_played": player.id_played,
                            "tournament_id": tournament_id}
             players_table.insert(player_data)
         self.delete_unfinished_tournament()

@@ -14,17 +14,8 @@ class ReportsView:
                       "3. Name and dates of a given tournament.\n" \
                       "4. List of tournaments players in alphabetical order.\n" \
                       "5. List of all tournaments rounds, and all matches in the round.\n"
-
-    def __int__(self):
-        """
-        Initialize the ReportsView with the necessary environment for rendering templates and create the report folder.
-        """
-        self.REPORT_FOLDER = "Reports_Output"
-        self.env = Environment(loader=FileSystemLoader("."))
-
-        # Create the report folder if it doesn't exist
-        if not os.path.exists(self.REPORT_FOLDER):
-            os.mkdir(self.REPORT_FOLDER)
+    REPORT_FOLDER = "Reports_Output"
+    env = Environment(loader=FileSystemLoader("."))
 
     def display_players(self, players: [Model.Player]):
         """
@@ -38,6 +29,7 @@ class ReportsView:
             named "report_all_players_output.html".
             The template used for rendering is "Templates/report_all_players.html".
         """
+        self.check_if_folder_exist()
         template = self.env.get_template("Templates/report_all_players.html")
         players_to_show = []
 
@@ -66,6 +58,7 @@ class ReportsView:
             named "report_all_tournaments_output.html".
             The template used for rendering is "Templates/report_all_tournaments.html".
         """
+        self.check_if_folder_exist()
         template = self.env.get_template("Templates/report_all_tournaments.html")
         tournaments_to_show = []
 
@@ -88,6 +81,7 @@ class ReportsView:
             a file named "report_one_tournament_output.html".
             The template used for rendering is "Templates/report_one_tournament.html".
         """
+        self.check_if_folder_exist()
         template = self.env.get_template("Templates/report_one_tournament.html")
         html_output = template.render(tournament=tournament_to_show)
         self.save_report_as_html_file(rendered_template=html_output,
@@ -108,6 +102,7 @@ class ReportsView:
             The rendered report is saved to a file
             named "report_players_output.html" in the "Reports_Output" folder.
         """
+        self.check_if_folder_exist()
         template = self.env.get_template("Templates/report_players.html")
         html_output = template.render(players=players, tournament_name=tournament_name)
         self.save_report_as_html_file(rendered_template=html_output,
@@ -126,6 +121,7 @@ class ReportsView:
             The template used for rendering is "Templates/report_rounds_of_tournament.html". The rendered report
             is saved to a file named "report_rounds_of_tournament_output.html" in the "Reports_Output" folder.
         """
+        self.check_if_folder_exist()
         template = self.env.get_template("Templates/report_rounds_of_tournament.html")
         html_output = template.render(tournament=tournament, rounds=rounds_to_show)
         self.save_report_as_html_file(rendered_template=html_output,
@@ -164,6 +160,13 @@ class ReportsView:
         with open(report_output_path, "w") as file:
             file.write(rendered_template)
         print(rendered_template)
+
+    def check_if_folder_exist(self):
+        """
+        Create the report folder if it doesn't exist.
+        """
+        if not os.path.exists(self.REPORT_FOLDER):
+            os.mkdir(self.REPORT_FOLDER)
 
     @staticmethod
     def get_choice(number_of_options: int, options_to_show: str) -> int:
