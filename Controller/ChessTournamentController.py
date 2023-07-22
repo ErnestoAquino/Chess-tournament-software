@@ -105,7 +105,6 @@ class ChessTournamentController:
             self.present_round(self.tournament.rounds[round_number - 1])
             self.save_tournament_progress()
             print(len(self.tournament.rounds[round_number - 1].list_of_matches))
-            self.print_played_player()
 
     def create_first_round(self):
         """
@@ -127,16 +126,9 @@ class ChessTournamentController:
         self.tournament.current_round += 1
         self.save_tournament_progress()
 
-    def print_played_player(self):
-        for player in self.tournament.players:
-            print(f"{player.first_name}")
-            player.print_opponents()
-
     def save_tournament(self):
-        # Todo Esto impide guardar el torneo
-        # self.data_base_manager.save_tournament(self.tournament)
-        # self.data_base_manager.delete_unfinished_tournament()
-        self.delete_unfinished_tournament()
+        self.data_base_manager.save_tournament(self.tournament)
+        self.data_base_manager.delete_unfinished_tournament()
 
     def build_interrupted_tournament(self):
         tournament_information = self.data_base_manager.load_unfinished_tournament()
@@ -153,8 +145,6 @@ class ChessTournamentController:
             self.create_round(round_number)
             self.present_round(self.tournament.rounds[round_number - 1])
             self.save_tournament_progress()
-            print(len(self.tournament.rounds[round_number - 1].list_of_matches))
-            self.print_played_player()
         self.finalize_the_tournament()
 
     def finalize_the_tournament(self):
@@ -169,20 +159,9 @@ class ChessTournamentController:
         self.chess_tournament_view.display_scores(self.tournament.players)
         self.tournament.write_end_date()
         self.save_tournament()
-    #     Todo After this point, everything can be deleted.
-        self.test_write_all_players_played()
 
     def delete_unfinished_tournament(self):
         self.data_base_manager.delete_unfinished_tournament()
 
     def save_tournament_progress(self):
         self.data_base_manager.make_check_point_tournament(self.tournament.to_dictionary())
-
-    # Todo These are test functions, they can be deleted after this line.
-    def test_write_all_players_played(self):
-        for player in self.tournament.players:
-            print(f"{player.first_name} = {player.id_played}")
-            if len(player.id_played) == len(set(player.id_played)):
-                print("There are no repeated players..\n")
-            else:
-                print("There are repeated players..\n")
