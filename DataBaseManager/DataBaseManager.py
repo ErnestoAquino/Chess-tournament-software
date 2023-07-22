@@ -37,7 +37,8 @@ class DataBaseManager:
                                "last_name": player.last_name,
                                "date_of_birth": player.date_of_birth,
                                "chess_national_id": player.chess_national_id,
-                               "score": player.score}
+                               "score": player.score,
+                               "id_played": player.id_played}
                 players_table.insert(player_data)
         except Exception as e:
             print(f"Error occurred while saving players: {e}")
