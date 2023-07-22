@@ -81,6 +81,7 @@ class Player:
             "date_of_birth": self.date_of_birth,
             "chess_national_id": self.chess_national_id,
             "score": self.score,
+            "id_played": self.id_played
         }
         if self.played_players:
             dictionary["played_players"] = self.players_to_dictionary(self.played_players)
@@ -103,6 +104,7 @@ class Player:
             data["date_of_birth"],
             data["chess_national_id"]
         )
+        player.id_played = data["id_played"]
         for key, value in data.items():
             if key == "played_players":
                 players_data = value
