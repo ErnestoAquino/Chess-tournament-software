@@ -22,15 +22,8 @@ def main():
 
     This function analyzes the specified files and folders using Flake8 and saves the reports
     in the 'flake8_reports' folder. If the folder does not exist, it will be created.
-
-    Example:
-        >>> main()
-        'flake8_reports/main_flake8_report.txt'
-        'flake8_reports/Controller_flake8_report.txt'
-        'flake8_reports/Model_flake8_report.txt'
-        'flake8_reports/View_flake8_report.txt'
     """
-    files_or_folders_to_analyze = ["Controller", "Model", "View", "main.py"]
+    files_or_folders_to_analyze = ["Controller", "Model", "View", "DataBaseManager", "main.py"]
 
     if not os.path.exists("flake8_reports"):
         os.mkdir("flake8_reports")
