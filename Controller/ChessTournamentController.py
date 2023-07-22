@@ -1,5 +1,4 @@
-from typing import List
-import itertools
+
 import DataBaseManager
 import Model
 import View
@@ -68,40 +67,10 @@ class ChessTournamentController:
             if match.result == Model.Result.TO_BE_PLAYED:
                 result = self.chess_tournament_view.get_result_of_match()
                 match.set_result(result)
-            self.save_tournament_progress()
+                self.save_tournament_progress()
         round_to_show.write_end_datetime()
         self.tournament.current_round += 1
         self.save_tournament_progress()
-
-    def generate_matches(self) -> List[Model.Match]:
-        """
-        Generates the matches for a round of the tournament.
-
-        Returns:
-            List[Model.Match]: The generated matches.
-        """
-        self.tournament.sort_players()
-        pairings = []
-        paired_players = []
-        players_with_pair = []
-
-        for i, player in enumerate(self.tournament.players):
-            for j, pair in enumerate(itertools.combinations(self.tournament.players, 2)):
-                if pair[1] not in pair[0].played_players and pair[0] not in pair[1].played_players and \
-                        player == pair[0] and pair not in paired_players and pair[0] not in players_with_pair \
-                        and pair[1] not in players_with_pair:
-                    paired_players.append(pair)
-                    player1 = pair[0]
-                    player2 = pair[1]
-                    pairings.append(Model.Match(player1, player2))
-                    players_with_pair.append(pair[0])
-                    players_with_pair.append(pair[1])
-
-        possibles_chess_games = itertools.combinations(self.tournament.players, 2)
-        for possible_game in possibles_chess_games:
-            player1, player2 = possible_game
-            print(player1.first_name, player2.first_name)
-        return pairings
 
     def create_round(self, number_of_round: int):
         """
@@ -112,11 +81,15 @@ class ChessTournamentController:
         """
         self.tournament.sort_players()
         new_round = Model.Round(name=f"Round {number_of_round}")
-        pairings = self.generate_matches()
-        for match in pairings:
-            match.player1.played_players.append(match.player2)
-            match.player2.played_players.append(match.player1)
-            new_round.add_mach(match)
+        self.tournament.sort_players()
+        try:
+            pairings = self.tournament.generate_matches()
+            for match in pairings:
+                match.player1.id_played.append(match.player2.chess_national_id)
+                match.player2.id_played.append(match.player1.chess_national_id)
+                new_round.add_mach(match)
+        except ValueError as error:
+            print("Error", str(error))
         self.tournament.rounds.append(new_round)
         self.save_tournament_progress()
 
@@ -146,8 +119,8 @@ class ChessTournamentController:
         for i in range(0, len(self.tournament.players), 2):
             player1 = self.tournament.players[i]
             player2 = self.tournament.players[i + 1]
-            player1.played_players.append(player2)
-            player2.played_players.append(player1)
+            player1.id_played.append(player2.chess_national_id)
+            player2.id_played.append(player1.chess_national_id)
             match = Model.Match(player1, player2)
             first_round.add_mach(match)
         self.tournament.rounds.append(first_round)
@@ -167,6 +140,7 @@ class ChessTournamentController:
 
     def build_interrupted_tournament(self):
         tournament_information = self.data_base_manager.load_unfinished_tournament()
+        print(tournament_information)
         self.tournament = Model.Tournament.load_from_dictionary(tournament_information)
 
     def resume_tournament(self):
@@ -195,9 +169,20 @@ class ChessTournamentController:
         self.chess_tournament_view.display_scores(self.tournament.players)
         self.tournament.write_end_date()
         self.save_tournament()
+    #     Todo After this point, everything can be deleted.
+        self.test_write_all_players_played()
 
     def delete_unfinished_tournament(self):
         self.data_base_manager.delete_unfinished_tournament()
 
     def save_tournament_progress(self):
         self.data_base_manager.make_check_point_tournament(self.tournament.to_dictionary())
+
+    # Todo These are test functions, they can be deleted after this line.
+    def test_write_all_players_played(self):
+        for player in self.tournament.players:
+            print(f"{player.first_name} = {player.id_played}")
+            if len(player.id_played) == len(set(player.id_played)):
+                print("There are no repeated players..\n")
+            else:
+                print("There are repeated players..\n")
