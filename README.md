@@ -60,6 +60,10 @@ directory:
 ```
 flake8-report/index.html
 ```
+You can also use the following command to create a new report:
+```
+flake8 --format=html --htmldir=flake-report
+```
 
 ## Code Analysis:
 If you want to analyze the code compliance again, you can use the following command:
