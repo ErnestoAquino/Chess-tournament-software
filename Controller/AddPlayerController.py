@@ -38,4 +38,7 @@ class AddPlayerController:
         passing the list of players to be saved. The database manager handles
         the process of storing the player data in the database.
         """
-        self.database_manager.save_players(self.players)
+        try:
+            self.database_manager.save_players(self.players)
+        except Exception as e:
+            print(f"Error occurred while saving players: {e}")
